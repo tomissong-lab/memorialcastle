@@ -422,7 +422,7 @@ app.get('/', (c) => {
             <li><a href="/about">회사소개</a></li>
             <li><a href="/reviews">고객후기</a></li>
             <li><a href="/contact">24시간 상담</a></li>
-            <li><a href="/news">보도자료</a></li>
+            <li><a href="/contact">상담 예약</a></li>
           </ul>
         </div>
         <div class="footer-contact">
@@ -430,7 +430,7 @@ app.get('/', (c) => {
           <p><i class="fas fa-phone"></i> 1588-9999</p>
           <p><i class="fas fa-clock"></i> 24시간 365일</p>
           <p><i class="fas fa-envelope"></i> hello@withendings.co.kr</p>
-          <p><i class="fas fa-map-marker-alt"></i> 서울특별시 마포구</p>
+          <p><i class="fas fa-map-marker-alt"></i> 인천광역시 부평구</p>
         </div>
       </div>
       <div class="footer-bottom">
@@ -1291,7 +1291,7 @@ app.get('/contact', (c) => {
               <i class="fas fa-map-marker-alt"></i>
               <div>
                 <strong>사무소 위치</strong>
-                <p>서울특별시 마포구</p>
+                <p>인천광역시 부평구</p>
                 <small>방문 상담 가능 (예약 필수)</small>
               </div>
             </div>
