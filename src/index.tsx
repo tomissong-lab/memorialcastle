@@ -1221,37 +1221,45 @@ app.get('/contact', (c) => {
             <div class="form-row">
               <div class="form-group">
                 <label>이름 *</label>
-                <input type="text" placeholder="홍길동" required />
+                <input type="text" id="field_name" name="from_name" placeholder="홍길동" required />
               </div>
               <div class="form-group">
                 <label>연락처 *</label>
-                <input type="tel" placeholder="010-0000-0000" required />
+                <input type="tel" id="field_phone" name="from_phone" placeholder="010-0000-0000" required />
               </div>
             </div>
             <div class="form-group">
+              <label>이메일 (선택)</label>
+              <input type="email" id="field_email" name="from_email" placeholder="example@email.com" />
+            </div>
+            <div class="form-group">
               <label>상담 유형 *</label>
-              <select required>
+              <select id="field_type" name="consult_type" required>
                 <option value="">선택해주세요</option>
-                <option value="urgent">🚨 긴급 장례 (임종 직후)</option>
-                <option value="plan">📋 장례 사전 계획</option>
-                <option value="membership">🌿 멤버십 가입 문의</option>
-                <option value="asset">🏦 상속·증여 설계</option>
-                <option value="other">💬 기타 문의</option>
+                <option value="🚨 긴급 장례 (임종 직후)">🚨 긴급 장례 (임종 직후)</option>
+                <option value="📋 장례 사전 계획">📋 장례 사전 계획</option>
+                <option value="🌿 멤버십 가입 문의">🌿 멤버십 가입 문의</option>
+                <option value="🏦 상속·증여 설계">🏦 상속·증여 설계</option>
+                <option value="💬 기타 문의">💬 기타 문의</option>
               </select>
             </div>
             <div class="form-group">
               <label>문의 내용</label>
-              <textarea rows="5" placeholder="궁금한 점이나 상황을 간략하게 적어주세요..."></textarea>
+              <textarea id="field_message" name="message" rows="5" placeholder="궁금한 점이나 상황을 간략하게 적어주세요..."></textarea>
             </div>
             <div class="form-group">
               <label class="checkbox-item">
-                <input type="checkbox" required />
+                <input type="checkbox" id="field_agree" required />
                 <span>개인정보 수집 및 이용에 동의합니다 (필수)</span>
               </label>
             </div>
-            <button type="submit" class="btn btn-primary btn-full">
+            <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
               <i class="fas fa-paper-plane"></i> 상담 신청하기
             </button>
+            <div id="sendError" style="display:none" class="form-error">
+              <i class="fas fa-exclamation-circle"></i>
+              <span id="sendErrorMsg">전송 중 오류가 발생했습니다. 전화(1588-9999)로 연락해 주세요.</span>
+            </div>
           </form>
           <div id="formSuccess" style="display:none" class="form-success">
             <i class="fas fa-check-circle"></i>
@@ -1314,6 +1322,7 @@ app.get('/contact', (c) => {
   </footer>
 
   <a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="/static/main.js"></script>
   <script src="/static/contact.js"></script>
 </body>
