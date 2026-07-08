@@ -120,6 +120,21 @@ input, select, textarea { font-family: inherit; }
   color: var(--primary);
 }
 .logo-icon { font-size: 1.4rem; }
+.nav-logo-img {
+  height: 40px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+.footer-logo-img {
+  height: 56px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  margin-bottom: 12px;
+}
 .nav-menu { display: flex; align-items: center; gap: 4px; }
 .nav-link {
   padding: 8px 14px; border-radius: 8px; font-size: .9rem; font-weight: 500;

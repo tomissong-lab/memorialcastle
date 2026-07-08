@@ -25,8 +25,7 @@ app.get('/', (c) => {
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <span class="logo-icon">🌿</span>
-        <span class="logo-text">위드엔딩</span>
+        <img src="/static/logo.png" alt="위드엔딩 Memorial Castle" class="nav-logo-img" />
       </a>
       <ul class="nav-menu" id="navMenu">
         <li><a href="/funeral" class="nav-link">무빈소 후불장례</a></li>
@@ -398,7 +397,7 @@ app.get('/', (c) => {
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
-          <div class="footer-logo">🌿 위드엔딩</div>
+          <div class="footer-logo"><img src="/static/logo.png" alt="위드엔딩 Memorial Castle" class="footer-logo-img" /></div>
           <p>무빈소 장례 특화 서비스 / AI 엔딩 노트<br />후불제 프리미엄 장례 + 자산관리 통합 서비스</p>
           <div class="footer-social">
             <a href="#" aria-label="카카오채널"><i class="fas fa-comment"></i></a>
@@ -473,7 +472,7 @@ app.get('/funeral', (c) => {
 <body>
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="/" class="nav-logo"><span class="logo-icon">🌿</span><span class="logo-text">위드엔딩</span></a>
+      <a href="/" class="nav-logo"><img src="/static/logo.png" alt="위드엔딩 Memorial Castle" class="nav-logo-img" /></a>
       <ul class="nav-menu" id="navMenu">
         <li><a href="/funeral" class="nav-link active">무빈소 후불장례</a></li>
         <li><a href="/membership" class="nav-link">위드 멤버십</a></li>
@@ -788,7 +787,7 @@ app.get('/membership', (c) => {
 <body>
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="/" class="nav-logo"><span class="logo-icon">🌿</span><span class="logo-text">위드엔딩</span></a>
+      <a href="/" class="nav-logo"><img src="/static/logo.png" alt="위드엔딩 Memorial Castle" class="nav-logo-img" /></a>
       <ul class="nav-menu" id="navMenu">
         <li><a href="/funeral" class="nav-link">무빈소 후불장례</a></li>
         <li><a href="/membership" class="nav-link active">위드 멤버십</a></li>
@@ -974,7 +973,7 @@ app.get('/asset', (c) => {
 <body>
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="/" class="nav-logo"><span class="logo-icon">🌿</span><span class="logo-text">위드엔딩</span></a>
+      <a href="/" class="nav-logo"><img src="/static/logo.png" alt="위드엔딩 Memorial Castle" class="nav-logo-img" /></a>
       <ul class="nav-menu" id="navMenu">
         <li><a href="/funeral" class="nav-link">무빈소 후불장례</a></li>
         <li><a href="/membership" class="nav-link">위드 멤버십</a></li>
@@ -1178,7 +1177,7 @@ app.get('/contact', (c) => {
 <body>
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="/" class="nav-logo"><span class="logo-icon">🌿</span><span class="logo-text">위드엔딩</span></a>
+      <a href="/" class="nav-logo"><img src="/static/logo.png" alt="위드엔딩 Memorial Castle" class="nav-logo-img" /></a>
       <ul class="nav-menu" id="navMenu">
         <li><a href="/funeral" class="nav-link">무빈소 후불장례</a></li>
         <li><a href="/membership" class="nav-link">위드 멤버십</a></li>
@@ -1336,7 +1335,7 @@ app.get('/guide', (c) => {
 <body>
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="/" class="nav-logo"><span class="logo-icon">🌿</span><span class="logo-text">위드엔딩</span></a>
+      <a href="/" class="nav-logo"><img src="/static/logo.png" alt="위드엔딩 Memorial Castle" class="nav-logo-img" /></a>
       <ul class="nav-menu" id="navMenu">
         <li><a href="/funeral" class="nav-link">무빈소 후불장례</a></li>
         <li><a href="/membership" class="nav-link">위드 멤버십</a></li>
@@ -1435,7 +1434,7 @@ app.get('/about', (c) => {
 <body>
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="/" class="nav-logo"><span class="logo-icon">🌿</span><span class="logo-text">위드엔딩</span></a>
+      <a href="/" class="nav-logo"><img src="/static/logo.png" alt="위드엔딩 Memorial Castle" class="nav-logo-img" /></a>
       <ul class="nav-menu" id="navMenu">
         <li><a href="/funeral" class="nav-link">무빈소 후불장례</a></li>
         <li><a href="/membership" class="nav-link">위드 멤버십</a></li>
