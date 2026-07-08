@@ -13,7 +13,7 @@ app.get('/', (c) => {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>위드엔딩 - 먼저 보내드립니다, 비용은 그 다음입니다</title>
+  <title>위드엔딩 - 삶의 마지막 장을, 가장 아름답게 써드립니다.</title>
   <meta name="description" content="대한민국 최초 무빈소 특화 후불 장례 + 자산관리 통합 서비스. 선불 없이, 추가비용 없이, 투명하게." />
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -47,11 +47,11 @@ app.get('/', (c) => {
     <div class="hero-content">
       <div class="hero-badge">
         <span class="badge-dot"></span>
-        대한민국 최초 무빈소 특화 후불장례 + 자산관리 통합
+        무빈소 특화 후불장례 + 자산관리 통합
       </div>
       <h1 class="hero-title">
-        먼저 보내드립니다<br />
-        <span class="hero-title-accent">비용은 그 다음입니다</span>
+        삶의 마지막 장을,<br />
+        <span class="hero-title-accent">가장 아름답게 써드립니다.</span>
       </h1>
       <p class="hero-sub">
         선불 없이, 추가비용 없이, 투명하게.<br />
