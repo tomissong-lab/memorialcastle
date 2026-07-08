@@ -399,7 +399,7 @@ app.get('/', (c) => {
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="footer-logo">🌿 위드엔딩</div>
-          <p>대한민국 최초 무빈소 특화<br />후불 장례 + 자산관리 통합 서비스</p>
+          <p>무빈소 장례 특화 서비스 / AI 엔딩 노트<br />후불제 프리미엄 장례 + 자산관리 통합 서비스</p>
           <div class="footer-social">
             <a href="#" aria-label="카카오채널"><i class="fas fa-comment"></i></a>
             <a href="#" aria-label="유튜브"><i class="fab fa-youtube"></i></a>
@@ -429,8 +429,8 @@ app.get('/', (c) => {
           <h4>상담</h4>
           <p><i class="fas fa-phone"></i> 1588-9999</p>
           <p><i class="fas fa-clock"></i> 24시간 365일</p>
-          <p><i class="fas fa-envelope"></i> hello@withendings.co.kr</p>
-          <p><i class="fas fa-map-marker-alt"></i> 인천광역시 부평구</p>
+          <p><i class="fas fa-envelope"></i> memorialcastles@gmail.com</p>
+          <p><i class="fas fa-map-marker-alt"></i> 인천광역시 부평구 서달로298번길 50, 2층(청천동)</p>
         </div>
       </div>
       <div class="footer-bottom">
@@ -1283,7 +1283,7 @@ app.get('/contact', (c) => {
               <i class="fas fa-envelope"></i>
               <div>
                 <strong>이메일</strong>
-                <p>hello@withendings.co.kr</p>
+                <p>memorialcastles@gmail.com</p>
                 <small>24시간 접수</small>
               </div>
             </div>
@@ -1291,7 +1291,7 @@ app.get('/contact', (c) => {
               <i class="fas fa-map-marker-alt"></i>
               <div>
                 <strong>사무소 위치</strong>
-                <p>인천광역시 부평구</p>
+                <p>인천광역시 부평구 서달로298번길 50, 2층(청천동)</p>
                 <small>방문 상담 가능 (예약 필수)</small>
               </div>
             </div>
