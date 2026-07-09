@@ -134,7 +134,7 @@ app.get('/', (c) => {
             <i class="fas fa-seedling" style="color:#2D6A4F"></i>
           </div>
           <h3>무빈소 전문성</h3>
-          <p>허례허식 없이 조촐하지만 존엄하게. 실명제 장례지도사가 처음부터 끝까지 함께합니다.</p>
+          <p>허례허식 없이 존엄하고 아름답게. 실명제 장례지도사가 처음부터 끝까지 함께합니다.</p>
           <ul class="diff-list">
             <li><i class="fas fa-check"></i> 전담 장례지도사 배정</li>
             <li><i class="fas fa-check"></i> 사회적 편견 해소 지원</li>
@@ -441,7 +441,7 @@ app.get('/', (c) => {
         <p class="footer-copy">
           ⚠️ 위드 멤버십은 현재 제공되는 서비스의 구독료이며, 장례비를 선납하는 상조가 아닙니다.
         </p>
-        <p class="footer-copy">© 2026 위드엔딩 (withendings.co.kr). All rights reserved.</p>
+        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -759,7 +759,7 @@ app.get('/funeral', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
-        <p class="footer-copy">© 2026 위드엔딩 (withendings.co.kr). All rights reserved.</p>
+        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
         <p class="footer-copy">⚠️ 위드 멤버십은 현재 제공되는 서비스의 구독료이며, 장례비를 선납하는 상조가 아닙니다.</p>
       </div>
     </div>
@@ -946,7 +946,7 @@ app.get('/membership', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
-        <p class="footer-copy">© 2026 위드엔딩 (withendings.co.kr). All rights reserved.</p>
+        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
         <p class="footer-copy">⚠️ 위드 멤버십은 현재 제공되는 서비스의 구독료이며, 장례비를 선납하는 상조가 아닙니다.</p>
       </div>
     </div>
@@ -1150,7 +1150,7 @@ app.get('/asset', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
-        <p class="footer-copy">© 2026 위드엔딩 (withendings.co.kr). All rights reserved.</p>
+        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -1247,11 +1247,12 @@ app.get('/contact', (c) => {
               <label>문의 내용</label>
               <textarea id="field_message" name="message" rows="5" placeholder="궁금한 점이나 상황을 간략하게 적어주세요..."></textarea>
             </div>
-            <div class="form-group">
-              <label class="checkbox-item">
+            <div class="form-group agree-group">
+              <label class="checkbox-item agree-inline">
                 <input type="checkbox" id="field_agree" required />
-                <span>개인정보 수집 및 이용에 동의합니다 (필수)</span>
+                <span>개인정보 수집 및 이용에 동의합니다 <strong>(필수)</strong></span>
               </label>
+              <a href="/privacy" class="agree-detail-link" target="_blank">내용 보기</a>
             </div>
             <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
               <i class="fas fa-paper-plane"></i> 상담 신청하기
@@ -1316,7 +1317,7 @@ app.get('/contact', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
-        <p class="footer-copy">© 2026 위드엔딩 (withendings.co.kr). All rights reserved.</p>
+        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -1417,7 +1418,7 @@ app.get('/guide', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
-        <p class="footer-copy">© 2026 위드엔딩 (withendings.co.kr). All rights reserved.</p>
+        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -1542,7 +1543,7 @@ app.get('/about', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
-        <p class="footer-copy">© 2026 위드엔딩 (withendings.co.kr). All rights reserved.</p>
+        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
   </footer>

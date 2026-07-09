@@ -689,6 +689,42 @@ input, select, textarea { font-family: inherit; }
 }
 .form-error i { flex-shrink: 0; }
 
+/* 개인정보 동의 가로 정렬 */
+.agree-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+.agree-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  cursor: pointer;
+  font-size: .9rem;
+  margin: 0;
+}
+.agree-inline input[type="checkbox"] {
+  width: 18px; height: 18px;
+  accent-color: var(--primary);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.agree-detail-link {
+  font-size: .8rem;
+  color: var(--primary);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: underline;
+  flex-shrink: 0;
+}
+.agree-detail-link:hover { color: var(--primary-dark); }
+
 /* ── GUIDE ────────────────────────────────────────────── */
 .guide-hero { background: linear-gradient(135deg, #1A3A1A 0%, #2D6A4F 100%) !important; }
 .guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
