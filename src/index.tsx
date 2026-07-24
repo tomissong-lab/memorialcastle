@@ -303,7 +303,7 @@ app.get('/', (c) => {
           <div class="step-number">03</div>
           <div class="step-icon"><i class="fas fa-heart"></i></div>
           <h4>존엄한 장례</h4>
-          <p>선택한 패키지로 조촐하지만 품격 있는 장례를 진행합니다</p>
+          <p>선택한 패키지로 가족 중심의 품격 있는 장례를 진행합니다</p>
         </div>
         <div class="process-arrow"><i class="fas fa-chevron-right"></i></div>
         <div class="process-step">
@@ -489,7 +489,7 @@ app.get('/funeral', (c) => {
   <section class="page-hero funeral-hero">
     <div class="page-hero-content">
       <span class="section-tag">무빈소 후불장례</span>
-      <h1>조촐하지만 존엄하게<br /><span class="accent">비용은 장례 이후에</span></h1>
+      <h1>우리 가족끼리 존엄하게<br /><span class="accent">고인 추모</span></h1>
       <p>대한민국 최초 후불 정산 시스템. 선불금 0원, 추가비용 0원, 투명한 정찰제.</p>
       <a href="#calculator" class="btn btn-primary">
         <i class="fas fa-calculator"></i> 지금 예상 비용 계산하기

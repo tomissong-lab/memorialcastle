@@ -92,7 +92,7 @@ input, select, textarea { font-family: inherit; }
   box-shadow: 0 8px 32px rgba(230,57,70,.4);
 }
 .btn-emergency-big:hover { background: var(--emergency-dark); transform: translateY(-3px); }
-.btn-full { width: 100%; display: flex; }
+.btn-full { width: 100%; display: flex; box-sizing: border-box; }
 .btn-kakao { background: #FEE500; color: #3A1D1D; font-weight: 700; }
 .btn-kakao:hover { background: #F0D800; }
 
@@ -479,7 +479,12 @@ input, select, textarea { font-family: inherit; }
 .pkg-features .yes .fa-check { color: var(--primary); flex-shrink: 0; margin-top: 2px; }
 .pkg-features .no .fa-times { color: var(--text-muted); flex-shrink: 0; margin-top: 2px; }
 .pkg-features .note .fa-info-circle { color: var(--accent); flex-shrink: 0; margin-top: 2px; }
-.pkg-card .btn { margin: 0 28px 28px; }
+.pkg-card .btn {
+  margin: 0 24px 24px;
+  width: calc(100% - 48px);
+  box-sizing: border-box;
+  justify-content: center;
+}
 
 /* ── DIRECTORS ────────────────────────────────────────── */
 .directors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
