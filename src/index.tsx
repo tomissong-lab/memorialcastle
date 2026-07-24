@@ -698,6 +698,141 @@ app.get('/funeral', (c) => {
     </div>
   </section>
 
+  <!-- DETAIL PRICE TABLE (탭: 베이직/스탠다드/프리미엄 + 무빈소 기본형/고급형) -->
+  <section class="detail-price-section section-padding">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">상세 구성 비교</span>
+        <h2 class="section-title">패키지별 구성 항목 한눈에 비교</h2>
+        <p class="section-sub">아래 탭을 선택해 원하는 상품의 구성을 확인하세요</p>
+      </div>
+
+      <!-- 탭 버튼 -->
+      <div class="detail-tab-group">
+        <button class="detail-tab active" onclick="switchTab('tab-full')">📋 베이직 · 스탠다드 · 프리미엄</button>
+        <button class="detail-tab" onclick="switchTab('tab-mubinso')">🏠 무빈소 기본형 · 고급형</button>
+      </div>
+
+      <!-- 탭 패널 -->
+      <div class="detail-tab-panels">
+
+        <!-- ① 베이직 / 스탠다드 / 프리미엄 -->
+        <div class="tab-panel active" id="tab-full">
+          <div class="detail-table-wrap">
+            <table class="detail-price-table">
+              <thead>
+                <tr>
+                  <th class="col-category">구분</th>
+                  <th class="col-basic">🌱 베이직<span class="price-sub">상품가 : 390만원</span></th>
+                  <th class="col-standard">🌳 스탠다드<span class="price-sub">상품가 : 490만원</span></th>
+                  <th class="col-premium">🏆 프리미엄<span class="price-sub">상품가 : 590만원</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 장례인력 -->
+                <tr class="row-group-header"><td colspan="4">장례인력</td></tr>
+                <tr class="sub-item"><td>장례지도사</td><td>2인[입관 및 보조]</td><td>2인[입관 및 보조]</td><td>2인[입관 및 보조]</td></tr>
+                <tr class="sub-item"><td>의전지도사</td><td>1인[20시간 기준]</td><td>1인[20시간 기준]</td><td>1인[20시간 기준]</td></tr>
+                <tr class="sub-item"><td>의전관리사</td><td class="highlight-blue">4인 [총 40시간]</td><td class="highlight-blue">6인 [총 60시간]</td><td class="highlight-red">8인 [총 80시간]</td></tr>
+
+                <!-- 장의차량 -->
+                <tr class="row-group-header"><td colspan="4">장의차량</td></tr>
+                <tr class="sub-item"><td>리무진 버스 · 고급 리무진</td><td class="highlight-blue">왕복 150km 제공 버스 &amp; 리무진</td><td class="highlight-blue">왕복 300km 제공 버스 &amp; 리무진</td><td>왕복 500km 제공 버스 &amp; 리무진</td></tr>
+                <tr class="sub-item"><td>이송 앰뷸런스</td><td>관내 20km 제공</td><td>관내 30km 제공</td><td>관내/관외 30km 제공</td></tr>
+
+                <!-- 입관용품 -->
+                <tr class="row-group-header"><td colspan="4">입관용품</td></tr>
+                <tr class="sub-item"><td>관 (화장)</td><td>화장 : 1.7cm 오동[보통]</td><td class="highlight-red">화장 : 1.7cm 오동[특]</td><td class="highlight-red">화장 : 1.7cm 오동[특]</td></tr>
+                <tr class="sub-item"><td>관 (매장)</td><td>매장 : 4.2cm 오동[보통]</td><td class="highlight-red">매장 : 4.2cm 오동[특]</td><td class="highlight-red">매장 : 4.2cm 오동[특]</td></tr>
+                <tr class="sub-item"><td>수의</td><td>MC 명품 3호 / 저마</td><td>MC 4호 / 대마</td><td>MC 4호 / 실크</td></tr>
+                <tr class="sub-item"><td>고인용품</td><td>일체 제공</td><td>일체 제공</td><td>일체 제공</td></tr>
+
+                <!-- 상주용품 -->
+                <tr class="row-group-header"><td colspan="4">상주용품</td></tr>
+                <tr class="sub-item"><td>빈소용품</td><td>일체 제공</td><td>일체 제공</td><td>일체 제공</td></tr>
+                <tr class="sub-item"><td>남자</td><td>검정양복 4벌 대여</td><td>검정양복 8벌 대여</td><td>검정양복 12벌 대여</td></tr>
+                <tr class="sub-item"><td>여자</td><td>개량한복 4벌 대여</td><td>개량한복 무제한 대여</td><td>개량한복 무제한 대여</td></tr>
+
+                <!-- 헌화 -->
+                <tr class="row-group-header"><td colspan="4">헌화</td></tr>
+                <tr class="sub-item"><td>헌화 꽃</td><td>30 송이</td><td class="highlight-red">60 송이</td><td class="highlight-red">60 송이</td></tr>
+
+                <!-- 유골함 -->
+                <tr class="row-group-header"><td colspan="4">유골함</td></tr>
+                <tr class="sub-item"><td>화장 시 제공</td><td class="highlight-gold">MC - 2호 (황토함)</td><td class="highlight-gold">MC - 3호 (도자기함)</td><td class="highlight-gold">MC - 3호 (진공도자기함)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ② 무빈소 기본형 / 고급형 -->
+        <div class="tab-panel" id="tab-mubinso">
+          <div class="detail-table-wrap">
+            <table class="detail-price-table">
+              <thead>
+                <tr>
+                  <th class="col-category">구분</th>
+                  <th class="col-mubinso-basic">🏠 무빈소 기본형<span class="price-sub">상품가 : 120만원</span></th>
+                  <th class="col-mubinso-premium">✨ 무빈소 고급형<span class="price-sub">상품가 : 150만원</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 장례인력 -->
+                <tr class="row-group-header"><td colspan="3">장례인력</td></tr>
+                <tr class="sub-item"><td>장례지도사</td><td>2인[입관 및 보조]</td><td>2인[입관 및 보조]</td></tr>
+                <tr class="sub-item"><td>발인지도사</td><td>—</td><td class="highlight-red">관내</td></tr>
+                <tr class="sub-item"><td>의전관리사</td><td>—</td><td>—</td></tr>
+
+                <!-- 장의차량 -->
+                <tr class="row-group-header"><td colspan="3">장의차량</td></tr>
+                <tr class="sub-item"><td>리무진 버스 · 고급 리무진</td><td>왕복 100km 제공 고인전용 앰뷸런스</td><td class="highlight-red">왕복 100km 제공 버스 or 리무진 택1</td></tr>
+                <tr class="sub-item"><td>이송 앰뷸런스</td><td>관내 10km 제공</td><td class="highlight-red">관내 20km 제공</td></tr>
+
+                <!-- 입관용품 -->
+                <tr class="row-group-header"><td colspan="3">입관용품</td></tr>
+                <tr class="sub-item"><td>관 (화장)</td><td>화장 : 1.7cm 오동[보통]</td><td>화장 : 1.7cm 오동[보통]</td></tr>
+                <tr class="sub-item"><td>관 (매장)</td><td>매장 : 4.2cm 오동[보통]</td><td>매장 : 4.2cm 오동[보통]</td></tr>
+                <tr class="sub-item"><td>수의</td><td>MC 2호 / 면</td><td>MC 2호 / 저마</td></tr>
+                <tr class="sub-item"><td>고인용품</td><td>일체제공</td><td>일체제공</td></tr>
+
+                <!-- 상주용품 -->
+                <tr class="row-group-header"><td colspan="3">상주용품</td></tr>
+                <tr class="sub-item"><td>빈소용품</td><td>선택</td><td class="highlight-red">오동나무 위패</td></tr>
+                <tr class="sub-item"><td>남자</td><td>선택</td><td>선택</td></tr>
+                <tr class="sub-item"><td>여자</td><td>선택</td><td>선택</td></tr>
+
+                <!-- 헌화 -->
+                <tr class="row-group-header"><td colspan="3">헌화</td></tr>
+                <tr class="sub-item"><td>헌화 꽃</td><td>선택</td><td class="highlight-red">국화 10송이</td></tr>
+
+                <!-- 유골함 -->
+                <tr class="row-group-header"><td colspan="3">유골함</td></tr>
+                <tr class="sub-item"><td>화장 시 제공</td><td class="highlight-gold">MC - 1호 (목함)</td><td class="highlight-gold">MC - 1호 (목함)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="text-align:center; margin-top:16px; font-size:.85rem; color:#666;">
+            ※ 무빈소 장례는 빈소 설치 없이 진행되는 합리적인 장례 방식입니다. 추가 구성은 상담 후 선택 가능합니다.
+          </p>
+        </div>
+
+      </div><!-- /.detail-tab-panels -->
+
+      <div style="text-align:center; margin-top:32px;">
+        <a href="/contact" class="btn btn-primary"><i class="fas fa-comments"></i> 무료 상담으로 나에게 맞는 패키지 확인</a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  function switchTab(id) {
+    document.querySelectorAll('.detail-tab-panels .tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.detail-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+  </script>
+
   <!-- DIRECTORS -->
   <section class="directors-section section-padding">
     <div class="container">
