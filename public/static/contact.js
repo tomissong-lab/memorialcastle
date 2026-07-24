@@ -15,9 +15,9 @@
 // ▼ EmailJS 설정값 입력 (관리자 전용)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const EMAILJS_CONFIG = {
-  publicKey:   'YOUR_PUBLIC_KEY',      // EmailJS 계정 Public Key
-  serviceId:   'YOUR_SERVICE_ID',      // Gmail 연결 후 발급된 Service ID
-  templateId:  'YOUR_TEMPLATE_ID',     // 이메일 템플릿 ID
+  publicKey:   'ZJKegSpUK1WF__KKR',   // EmailJS 계정 Public Key
+  serviceId:   'service_5yhtm3q',      // Gmail 연결 후 발급된 Service ID
+  templateId:  'template_ijr3gml',     // 이메일 템플릿 ID
 };
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
