@@ -5,10 +5,10 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  const basePrice = { basic: 2490000, standard: 3490000, premium: 4990000 };
+  const basePrice = { basic: 3900000, standard: 4900000, premium: 5900000 };
   const discountRate = { none: 0, lite: 0.05, standard: 0.10, family: 0.15 };
   const monthlyBenefit = { none: 0, lite: 6900, standard: 19350, family: 49800 };
-  const pkgLabels = { basic: '🌱 베이직 (무빈소 직장형)', standard: '🌳 스탠다드 (소규모 가족장)', premium: '🏆 프리미엄 (맞춤형 존엄장례)' };
+  const pkgLabels = { basic: '🌱 베이직 (합리적 기본 장례)', standard: '🌳 스탠다드 (품격 있는 가족장)', premium: '🏆 프리미엄 (최상위 존엄장례)' };
 
   function fmt(n) {
     return Math.round(n).toLocaleString('ko-KR') + '원';

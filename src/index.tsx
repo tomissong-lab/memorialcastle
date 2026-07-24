@@ -514,24 +514,24 @@ app.get('/funeral', (c) => {
                 <input type="radio" name="package" value="basic" checked />
                 <div class="package-radio-content">
                   <div class="pkg-name">🌱 베이직</div>
-                  <div class="pkg-price">2,490,000원</div>
-                  <div class="pkg-desc">무빈소 직장형</div>
+                  <div class="pkg-price">3,900,000원</div>
+                  <div class="pkg-desc">합리적 기본 장례</div>
                 </div>
               </label>
               <label class="package-radio">
                 <input type="radio" name="package" value="standard" />
                 <div class="package-radio-content">
                   <div class="pkg-name">🌳 스탠다드</div>
-                  <div class="pkg-price">3,490,000원</div>
-                  <div class="pkg-desc">소규모 가족장</div>
+                  <div class="pkg-price">4,900,000원</div>
+                  <div class="pkg-desc">품격 있는 가족장</div>
                 </div>
               </label>
               <label class="package-radio">
                 <input type="radio" name="package" value="premium" />
                 <div class="package-radio-content">
                   <div class="pkg-name">🏆 프리미엄</div>
-                  <div class="pkg-price">4,990,000원</div>
-                  <div class="pkg-desc">맞춤형 존엄장례</div>
+                  <div class="pkg-price">5,900,000원</div>
+                  <div class="pkg-desc">최상위 존엄장례</div>
                 </div>
               </label>
             </div>
@@ -593,7 +593,7 @@ app.get('/funeral', (c) => {
           <div class="result-body">
             <div class="result-row">
               <span>패키지 기본가</span>
-              <span id="r-base">2,490,000원</span>
+              <span id="r-base">3,900,000원</span>
             </div>
             <div class="result-row discount" id="r-discount-row" style="display:none">
               <span>멤버십 할인</span>
@@ -610,7 +610,7 @@ app.get('/funeral', (c) => {
             <div class="result-divider"></div>
             <div class="result-total">
               <span>최종 예상 비용</span>
-              <span id="r-total" class="total-price">2,490,000원</span>
+              <span id="r-total" class="total-price">3,900,000원</span>
             </div>
             <p class="result-note">* 화장장 실비(8~15만원)는 실제 발생 금액으로 청구됩니다</p>
             <p class="result-note">* 최종 금액은 상담 후 계약서에 명시됩니다</p>
@@ -638,18 +638,18 @@ app.get('/funeral', (c) => {
           <div class="pkg-header">
             <span class="pkg-icon">🌱</span>
             <h3>베이직</h3>
-            <p class="pkg-tagline">무빈소 직장형</p>
-            <div class="pkg-price-big">2,490,000<span>원</span></div>
+            <p class="pkg-tagline">합리적 기본 장례</p>
+            <div class="pkg-price-big">3,900,000<span>원</span></div>
           </div>
           <ul class="pkg-features">
-            <li class="yes"><i class="fas fa-check"></i> 전담 코디네이터 배정</li>
-            <li class="yes"><i class="fas fa-check"></i> 시신 이송 (50km 이내)</li>
-            <li class="yes"><i class="fas fa-check"></i> 기본 수의 및 관</li>
-            <li class="yes"><i class="fas fa-check"></i> 염습 / 입관</li>
-            <li class="yes"><i class="fas fa-check"></i> 디지털 부고 발송</li>
-            <li class="yes"><i class="fas fa-check"></i> 온라인 추모관 1년</li>
-            <li class="no"><i class="fas fa-times"></i> 빈소 설치</li>
-            <li class="no"><i class="fas fa-times"></i> 추모 영상 제작</li>
+            <li class="yes"><i class="fas fa-check"></i> 장례지도사 2인 [입관 및 보조]</li>
+            <li class="yes"><i class="fas fa-check"></i> 의전지도사 1인 [20시간 기준]</li>
+            <li class="yes"><i class="fas fa-check"></i> 의전관리사 4인 [총 40시간]</li>
+            <li class="yes"><i class="fas fa-check"></i> 왕복 150km 버스 &amp; 리무진</li>
+            <li class="yes"><i class="fas fa-check"></i> 이송 앰뷸런스 관내 20km</li>
+            <li class="yes"><i class="fas fa-check"></i> MC 명품 3호 수의 / 저마</li>
+            <li class="yes"><i class="fas fa-check"></i> 헌화 30송이</li>
+            <li class="yes"><i class="fas fa-check"></i> 유골함 MC-2호 (황토함)</li>
             <li class="note"><i class="fas fa-info-circle"></i> 화장장 실비 별도 (8~15만원)</li>
           </ul>
           <a href="/contact" class="btn btn-outline btn-full">지금 상담</a>
@@ -659,18 +659,18 @@ app.get('/funeral', (c) => {
           <div class="pkg-header">
             <span class="pkg-icon">🌳</span>
             <h3>스탠다드</h3>
-            <p class="pkg-tagline">소규모 가족장</p>
-            <div class="pkg-price-big">3,490,000<span>원</span></div>
+            <p class="pkg-tagline">품격 있는 가족장</p>
+            <div class="pkg-price-big">4,900,000<span>원</span></div>
           </div>
           <ul class="pkg-features">
-            <li class="yes"><i class="fas fa-check"></i> 베이직 전체 포함</li>
-            <li class="yes"><i class="fas fa-check"></i> 삼베 수의</li>
-            <li class="yes"><i class="fas fa-check"></i> 편백나무 관</li>
-            <li class="yes"><i class="fas fa-check"></i> 소형 빈소 (1일)</li>
-            <li class="yes"><i class="fas fa-check"></i> 추모 영상 제작</li>
-            <li class="yes"><i class="fas fa-check"></i> 온라인 추모관 3년</li>
-            <li class="yes"><i class="fas fa-check"></i> 증여 설계 1회 상담</li>
-            <li class="no"><i class="fas fa-times"></i> 화장장 비용 포함</li>
+            <li class="yes"><i class="fas fa-check"></i> 장례지도사 2인 [입관 및 보조]</li>
+            <li class="yes"><i class="fas fa-check"></i> 의전지도사 1인 [20시간 기준]</li>
+            <li class="yes"><i class="fas fa-check"></i> 의전관리사 6인 [총 60시간]</li>
+            <li class="yes"><i class="fas fa-check"></i> 왕복 300km 버스 &amp; 리무진</li>
+            <li class="yes"><i class="fas fa-check"></i> 이송 앰뷸런스 관내 30km</li>
+            <li class="yes"><i class="fas fa-check"></i> MC 4호 수의 / 대마</li>
+            <li class="yes"><i class="fas fa-check"></i> 헌화 60송이</li>
+            <li class="yes"><i class="fas fa-check"></i> 유골함 MC-3호 (도자기함)</li>
             <li class="note"><i class="fas fa-info-circle"></i> 화장장 실비 별도 (8~15만원)</li>
           </ul>
           <a href="/contact" class="btn btn-primary btn-full">지금 상담</a>
@@ -679,17 +679,18 @@ app.get('/funeral', (c) => {
           <div class="pkg-header">
             <span class="pkg-icon">🏆</span>
             <h3>프리미엄</h3>
-            <p class="pkg-tagline">맞춤형 존엄장례</p>
-            <div class="pkg-price-big">4,990,000<span>원</span></div>
+            <p class="pkg-tagline">최상위 존엄장례</p>
+            <div class="pkg-price-big">5,900,000<span>원</span></div>
           </div>
           <ul class="pkg-features">
-            <li class="yes"><i class="fas fa-check"></i> 스탠다드 전체 포함</li>
-            <li class="yes"><i class="fas fa-check"></i> 고급 수의 (한지 명주)</li>
-            <li class="yes"><i class="fas fa-check"></i> 황장목 관</li>
-            <li class="yes"><i class="fas fa-check"></i> 빈소 1일 운영</li>
-            <li class="yes"><i class="fas fa-check"></i> AI 추모관 영구</li>
-            <li class="yes"><i class="fas fa-check"></i> 행정 대행 전체</li>
-            <li class="yes"><i class="fas fa-check"></i> 그리프케어 상담 포함</li>
+            <li class="yes"><i class="fas fa-check"></i> 장례지도사 2인 [입관 및 보조]</li>
+            <li class="yes"><i class="fas fa-check"></i> 의전지도사 1인 [20시간 기준]</li>
+            <li class="yes"><i class="fas fa-check"></i> 의전관리사 8인 [총 80시간]</li>
+            <li class="yes"><i class="fas fa-check"></i> 왕복 500km 버스 &amp; 리무진</li>
+            <li class="yes"><i class="fas fa-check"></i> 이송 앰뷸런스 관내/관외 30km</li>
+            <li class="yes"><i class="fas fa-check"></i> MC 4호 수의 / 실크</li>
+            <li class="yes"><i class="fas fa-check"></i> 헌화 60송이</li>
+            <li class="yes"><i class="fas fa-check"></i> 유골함 MC-3호 (진공도자기함)</li>
             <li class="yes"><i class="fas fa-check"></i> <strong>화장장 비용 포함</strong></li>
           </ul>
           <a href="/contact" class="btn btn-outline btn-full">지금 상담</a>
@@ -1700,11 +1701,11 @@ app.get('/api/calculate', (c) => {
   const membership = c.req.query('membership') || 'none'
   const months = parseInt(c.req.query('months') || '12')
 
-  const basePrice: Record<string, number> = { basic: 2490000, standard: 3490000, premium: 4990000 }
+  const basePrice: Record<string, number> = { basic: 3900000, standard: 4900000, premium: 5900000 }
   const discountRate: Record<string, number> = { none: 0, lite: 0.05, standard: 0.10, family: 0.15 }
   const monthlyBenefit: Record<string, number> = { none: 0, lite: 6900, standard: 19350, family: 49800 }
 
-  const base = basePrice[pkg] || 2490000
+  const base = basePrice[pkg] || 3900000
   const discount = base * (discountRate[membership] || 0)
   const accum = monthlyBenefit[membership] * months
   const total = Math.max(base - discount - accum, base * 0.5)
