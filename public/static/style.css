@@ -1001,3 +1001,15 @@ input, select, textarea { font-family: inherit; }
   .ungu-grid { grid-template-columns: 1fr; }
   .ungu-hero { padding: 48px 0; }
 }
+
+/* 운구의전 배너 — 서브헤드라인 & 본문 */
+.ungu-hero-text .ungu-sub {
+  font-size: 1.05rem; font-weight: 600;
+  color: rgba(255,255,255,.88); line-height: 1.65;
+  margin: 14px 0 18px; border-left: 3px solid #d4af37;
+  padding-left: 14px;
+}
+.ungu-hero-text .ungu-body {
+  font-size: .9rem; color: rgba(255,255,255,.68);
+  line-height: 1.85; max-width: 520px;
+}
