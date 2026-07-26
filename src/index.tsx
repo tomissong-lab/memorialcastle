@@ -434,8 +434,8 @@ app.get('/', (c) => {
       </div>
       <div class="footer-bottom">
         <div class="footer-legal">
-          <a href="/privacy">개인정보처리방침</a>
-          <a href="/terms">이용약관</a>
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da580a08f30d94d502ce6d1" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da5807a88d8c88d5751e5f1" target="_blank" rel="noopener noreferrer">이용약관</a>
           <a href="/legal">법적 고지</a>
         </div>
         <p class="footer-copy">
@@ -834,6 +834,64 @@ app.get('/funeral', (c) => {
   }
   </script>
 
+  <!-- 운구의전 HERO -->
+  <section class="ungu-hero">
+    <div class="container">
+      <div class="ungu-hero-inner">
+        <div class="ungu-hero-text">
+          <span class="section-tag-white">메모리얼캐슬 운구의전</span>
+          <h2>고인의 마지막 가시는 길,<br />진심으로 <em>禮</em>를 다하여<br />정성껏 모시는 <em>운구의전</em>입니다</h2>
+          <p>발인 후 장지까지, 전문 장례지도사가 직접 운구의전을 진행합니다.<br />메모리얼캐슬은 고인과 유가족 모두를 위한 품격 있는 의전을 약속드립니다.</p>
+        </div>
+        <div class="ungu-hero-icon">🎌</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 운구의전 POINT 4 -->
+  <section class="ungu-point-section section-padding">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">운구의전 서비스</span>
+        <h2 class="section-title">운구의전 Point 4</h2>
+        <p class="section-sub">메모리얼캐슬이 제공하는 4가지 핵심 가치</p>
+      </div>
+      <div class="ungu-grid">
+        <div class="ungu-card">
+          <span class="ungu-num">01</span>
+          <div class="ungu-icon-wrap">💰</div>
+          <h4>합리적인 비용</h4>
+          <div class="ungu-card-divider"></div>
+          <p>품격 높은 운구의전 서비스를 메모리얼캐슬에서 직접 진행하여 합리적인 비용으로 제공합니다.</p>
+        </div>
+        <div class="ungu-card">
+          <span class="ungu-num">02</span>
+          <div class="ungu-icon-wrap">🚗</div>
+          <h4>전문적인 운구의전</h4>
+          <div class="ungu-card-divider"></div>
+          <p>장례 전문 지식을 갖춘 장례지도사가 정성껏 예를 다하여 직접 운구의전을 진행합니다.</p>
+        </div>
+        <div class="ungu-card">
+          <span class="ungu-num">03</span>
+          <div class="ungu-icon-wrap">📋</div>
+          <h4>고객 맞춤형</h4>
+          <div class="ungu-card-divider"></div>
+          <p>장례식장 검색부터 화장·매장 및 필요 인원까지 선택 가능한 고객 맞춤형 예약 시스템입니다.</p>
+        </div>
+        <div class="ungu-card">
+          <span class="ungu-num">04</span>
+          <div class="ungu-icon-wrap">📅</div>
+          <h4>간편 예약 신청</h4>
+          <div class="ungu-card-divider"></div>
+          <p>발인 전날 간편 예약으로 진행, 가입 없이 누구나 쉽고 간편하게 예약 신청할 수 있습니다.</p>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:36px;">
+        <a href="/contact" class="btn btn-primary"><i class="fas fa-phone-alt"></i> 운구의전 상담 신청</a>
+      </div>
+    </div>
+  </section>
+
   <!-- DIRECTORS -->
   <section class="directors-section section-padding">
     <div class="container">
@@ -895,8 +953,12 @@ app.get('/funeral', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
-        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da580a08f30d94d502ce6d1" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da5807a88d8c88d5751e5f1" target="_blank" rel="noopener noreferrer">이용약관</a>
+        </div>
         <p class="footer-copy">⚠️ 위드 멤버십은 현재 제공되는 서비스의 구독료이며, 장례비를 선납하는 상조가 아닙니다.</p>
+        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -1082,8 +1144,12 @@ app.get('/membership', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
-        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da580a08f30d94d502ce6d1" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da5807a88d8c88d5751e5f1" target="_blank" rel="noopener noreferrer">이용약관</a>
+        </div>
         <p class="footer-copy">⚠️ 위드 멤버십은 현재 제공되는 서비스의 구독료이며, 장례비를 선납하는 상조가 아닙니다.</p>
+        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -1286,6 +1352,10 @@ app.get('/asset', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
+        <div class="footer-legal">
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da580a08f30d94d502ce6d1" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da5807a88d8c88d5751e5f1" target="_blank" rel="noopener noreferrer">이용약관</a>
+        </div>
         <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
@@ -1453,6 +1523,10 @@ app.get('/contact', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
+        <div class="footer-legal">
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da580a08f30d94d502ce6d1" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da5807a88d8c88d5751e5f1" target="_blank" rel="noopener noreferrer">이용약관</a>
+        </div>
         <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
@@ -1554,6 +1628,10 @@ app.get('/guide', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
+        <div class="footer-legal">
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da580a08f30d94d502ce6d1" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da5807a88d8c88d5751e5f1" target="_blank" rel="noopener noreferrer">이용약관</a>
+        </div>
         <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
@@ -1679,6 +1757,10 @@ app.get('/about', (c) => {
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
+        <div class="footer-legal">
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da580a08f30d94d502ce6d1" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da5807a88d8c88d5751e5f1" target="_blank" rel="noopener noreferrer">이용약관</a>
+        </div>
         <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
       </div>
     </div>
