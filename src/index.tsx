@@ -1672,43 +1672,56 @@ app.get('/about', (c) => {
     </div>
   </nav>
 
-  <section class="page-hero about-hero">
-    <div class="page-hero-content">
-      <span class="section-tag">회사소개</span>
-      <h1>죽음을 바꿔<br /><span class="accent">삶을 완성합니다</span></h1>
-      <p>위드엔딩은 장례업계의 불투명함에 맞서 투명하고 존엄한 마무리를 만들어갑니다.</p>
+  <!-- ① 히어로 -->
+  <section class="about-hero-new">
+    <div class="container">
+      <div class="about-hero-inner">
+        <span class="section-tag-gold">회사소개</span>
+        <h1 class="about-hero-title">삶이 존귀했듯,<br /><span class="about-hero-accent">마무리도 존귀해야 합니다</span></h1>
+        <p class="about-hero-sub">모든 사람은 존엄하게 마무리할 권리가 있습니다.</p>
+        <div class="about-hero-divider"></div>
+        <p class="about-hero-desc">메모리얼캐슬은 후불 정산, 투명한 가격, 실명제 전문가 — 이 세 가지로 장례업계의 신뢰를 새로 씁니다.</p>
+      </div>
     </div>
   </section>
 
-  <section class="section-padding">
+  <!-- ② 배경 — 우리가 이 일을 시작한 이유 -->
+  <section class="about-bg-section section-padding">
     <div class="container">
-      <div class="about-mission">
-        <div class="about-mission-text">
-          <span class="section-tag">미션</span>
-          <h2>"모든 사람은 존엄하게<br />마무리할 권리가 있습니다"</h2>
-          <p>수십 년간 장례업계는 슬픔에 빠진 가족을 대상으로 불투명한 가격과 추가 비용을 청구해 왔습니다. 위드엔딩은 이 구조를 바꿉니다.</p>
-          <p>후불 정산, 투명한 가격, 실명제 전문가. 이 세 가지로 장례업계의 신뢰를 회복하겠습니다.</p>
+      <div class="about-bg-inner">
+        <div class="about-bg-text">
+          <span class="section-tag">우리가 이 일을 시작한 이유</span>
+          <h2 class="about-bg-title">장례업계의 구조,<br />당연해서는 안 됩니다</h2>
+          <p class="about-bg-body">수십 년간 장례업계는 슬픔에 빠진 가족을 대상으로 불투명한 가격과 예상치 못한 추가 비용을 청구해 왔습니다. 메모리얼캐슬은 이 구조가 당연해서는 안 된다고 생각했습니다.</p>
+          <p class="about-bg-body">그래서 처음부터 다시 설계했습니다. 후불 정산, 투명한 가격, 실명제 전문가. 그리고 한 사람의 생이 완성되는 마지막 순간을, 인문학의 언어와 기술의 정교함으로 함께 지켜드립니다.</p>
         </div>
-        <div class="about-values">
-          <div class="value-item">
-            <span class="value-icon">💚</span>
-            <div>
-              <h4>투명성</h4>
-              <p>모든 비용을 사전에 공개합니다. 현장에서 추가 청구는 없습니다.</p>
+        <div class="about-bg-visual">
+          <div class="about-bg-card">
+            <div class="about-bg-card-icon">📞</div>
+            <div class="about-bg-card-text">
+              <strong>전화 한 통</strong>
+              <span>365일 24시간, 전문 장례지도사가 달려갑니다</span>
             </div>
           </div>
-          <div class="value-item">
-            <span class="value-icon">🤝</span>
-            <div>
-              <h4>신뢰성</h4>
-              <p>실명제 전문가가 끝까지 책임집니다.</p>
+          <div class="about-bg-card">
+            <div class="about-bg-card-icon">💳</div>
+            <div class="about-bg-card-text">
+              <strong>후불 정산</strong>
+              <span>이용하신 만큼만, 이후에 정산합니다</span>
             </div>
           </div>
-          <div class="value-item">
-            <span class="value-icon">🌱</span>
-            <div>
-              <h4>사회적 가치</h4>
-              <p>사회적경제 생태계와 연계하여 공동체 가치를 창출합니다.</p>
+          <div class="about-bg-card">
+            <div class="about-bg-card-icon">🏷️</div>
+            <div class="about-bg-card-text">
+              <strong>투명한 가격</strong>
+              <span>현장 추가 청구 없는 사전 공개 가격표</span>
+            </div>
+          </div>
+          <div class="about-bg-card">
+            <div class="about-bg-card-icon">🪪</div>
+            <div class="about-bg-card-text">
+              <strong>실명제 전문가</strong>
+              <span>처음부터 끝까지, 한 명의 지도사가 책임집니다</span>
             </div>
           </div>
         </div>
@@ -1716,39 +1729,75 @@ app.get('/about', (c) => {
     </div>
   </section>
 
-  <section class="section-padding bg-light">
+  <!-- ③ 핵심가치 4개 -->
+  <section class="about-values-section section-padding">
     <div class="container">
       <div class="section-header">
-        <span class="section-tag">연혁</span>
-        <h2 class="section-title">위드엔딩의 발자국</h2>
+        <span class="section-tag">핵심가치</span>
+        <h2 class="section-title">메모리얼캐슬이 지키는 네 가지 약속</h2>
+        <p class="section-sub">말이 아닌 구조로, 서비스가 아닌 문화로 증명합니다.</p>
       </div>
-      <div class="timeline">
-        <div class="tl-item">
-          <div class="tl-year">2023</div>
-          <div class="tl-content">
-            <h4>창업 및 서비스 기획</h4>
-            <p>사회적경제센터와의 협업으로 후불장례 서비스 모델 개발 시작</p>
-          </div>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-card-icon">🤍</div>
+          <h3 class="value-card-title">존엄 <span class="value-card-en">Dignity</span></h3>
+          <p class="value-card-body">죽음은 끝이 아니라 한 사람의 생이 완성되는 순간입니다. 메모리얼캐슬은 그 순간을 가장 인간적인 방식으로 모십니다. 형식이 아닌 진심으로, 절차가 아닌 예(禮)로.</p>
         </div>
-        <div class="tl-item">
-          <div class="tl-year">2024</div>
-          <div class="tl-content">
-            <h4>파일럿 서비스 론칭</h4>
-            <p>수도권 50건 파일럿 서비스 완료. 고객 만족도 98% 달성</p>
-          </div>
+        <div class="value-card">
+          <div class="value-card-icon">💚</div>
+          <h3 class="value-card-title">투명성 <span class="value-card-en">Transparency</span></h3>
+          <p class="value-card-body">모든 비용은 사전에 공개됩니다. 현장에서 추가 청구는 없습니다. 슬픔 앞에서 계산기를 꺼내야 하는 상황을 만들지 않겠습니다.</p>
         </div>
-        <div class="tl-item">
-          <div class="tl-year">2025</div>
-          <div class="tl-content">
-            <h4>위드 멤버십 론칭</h4>
-            <p>자산관리 통합 구독 서비스 출시. 전문가 네트워크 127명 구축</p>
-          </div>
+        <div class="value-card">
+          <div class="value-card-icon">🧡</div>
+          <h3 class="value-card-title">신뢰성 <span class="value-card-en">Accountability</span></h3>
+          <p class="value-card-body">10년 이상 경력의 실명제 전문 장례지도사가 처음부터 끝까지 한 분이 책임집니다. 담당자가 바뀌지 않습니다. 연락이 끊기지 않습니다.</p>
         </div>
-        <div class="tl-item active-tl">
-          <div class="tl-year">2026</div>
-          <div class="tl-content">
-            <h4>전국 서비스 확대</h4>
-            <p>누적 1,247건 달성. 전국 서비스망 구축 완료</p>
+        <div class="value-card">
+          <div class="value-card-icon">🌱</div>
+          <h3 class="value-card-title">사회적 가치 <span class="value-card-en">Social Value</span></h3>
+          <p class="value-card-body">메모리얼캐슬은 사회적경제 생태계와 연계하여 공동체적 가치를 창출합니다. 장례 서비스를 넘어, 생애 말기 돌봄 문화 전체를 바꾸는 것이 우리의 목표입니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ 기술 신뢰 섹션 -->
+  <section class="about-tech-section section-padding">
+    <div class="container">
+      <div class="section-header" style="margin-bottom:48px;">
+        <span class="section-tag-white">기술과 존엄</span>
+        <h2 class="section-title" style="color:#fff;">메모리얼캐슬은 지금,<br />다음을 준비하고 있습니다</h2>
+        <p class="section-sub" style="color:rgba(255,255,255,0.72);">우리는 장례 서비스를 잘 하는 것에서 멈추지 않습니다. 한 사람의 삶을 기록하고, 기억하고, 전달하는 방식 자체를 기술로 정교하게 다듬고 있습니다.</p>
+      </div>
+      <div class="about-tech-cards">
+        <div class="about-tech-card">
+          <div class="about-tech-card-icon">🤖</div>
+          <h4 class="about-tech-card-title">AI 엔딩노트</h4>
+          <p class="about-tech-card-body">나의 가치관과 마지막 메시지를 대화하듯 정리해주는 AI 엔딩노트. 기억이 글이 되고, 글이 유산이 됩니다.</p>
+          <span class="about-tech-badge">준비 중</span>
+        </div>
+        <div class="about-tech-card">
+          <div class="about-tech-card-icon">💻</div>
+          <h4 class="about-tech-card-title">Death-Tech 플랫폼</h4>
+          <p class="about-tech-card-body">상담부터 사후 관리까지 투명하게 연결하는 Death-Tech 플랫폼. 기술이 존엄을 지킬 수 있다고 믿습니다.</p>
+          <span class="about-tech-badge">준비 중</span>
+        </div>
+      </div>
+      <div class="about-promise-wrap">
+        <h3 class="about-promise-title">메모리얼캐슬의 후불 정산 약속</h3>
+        <div class="about-promise-grid">
+          <div class="about-promise-card">
+            <span class="about-promise-num">01</span>
+            <p>가입 절차도,<br /><strong>선불 납입도 없습니다</strong></p>
+          </div>
+          <div class="about-promise-card">
+            <span class="about-promise-num">02</span>
+            <p>전화 한 통이면<br /><strong>365일 24시간 달려갑니다</strong></p>
+          </div>
+          <div class="about-promise-card">
+            <span class="about-promise-num">03</span>
+            <p>이용하신 만큼만<br /><strong>후불로 정산합니다</strong></p>
           </div>
         </div>
       </div>
