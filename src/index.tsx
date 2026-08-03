@@ -1,7 +1,57 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/cloudflare-workers'
+import { cors } from 'hono/cors'
+import { jwt, sign, verify } from 'hono/jwt'
 
-const app = new Hono()
+// ─── Bindings 타입 ────────────────────────────────────────────────────────────
+type Bindings = { DB: D1Database }
+type Variables = { userId?: number; userRole?: string; userEmail?: string; userName?: string }
+
+const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+
+// ─── 전역 CORS ────────────────────────────────────────────────────────────────
+app.use('/api/*', cors())
+
+// ─── 유틸: 간단 SHA-256 (Web Crypto API) ─────────────────────────────────────
+async function hashPassword(pw: string): Promise<string> {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw))
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('')
+}
+
+// ─── 유틸: JWT 시크릿 (환경변수 없으면 기본값 사용) ───────────────────────────
+const JWT_SECRET = 'withendings-secret-2026-change-in-production'
+
+// ─── 미들웨어: JWT 인증 (선택적) ──────────────────────────────────────────────
+async function authMiddleware(c: any, next: any) {
+  const auth = c.req.header('Authorization') || ''
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : c.req.header('x-auth-token') || ''
+  if (token) {
+    try {
+      const payload = await verify(token, JWT_SECRET) as any
+      c.set('userId',    payload.userId)
+      c.set('userRole',  payload.role)
+      c.set('userEmail', payload.email)
+      c.set('userName',  payload.name)
+    } catch {}
+  }
+  await next()
+}
+
+// ─── 미들웨어: 로그인 필수 ────────────────────────────────────────────────────
+async function requireAuth(c: any, next: any) {
+  await authMiddleware(c, next)
+  if (!c.get('userId')) {
+    return c.json({ success: false, message: '로그인이 필요합니다.' }, 401)
+  }
+}
+
+// ─── 미들웨어: 관리자 필수 ────────────────────────────────────────────────────
+async function requireAdmin(c: any, next: any) {
+  await authMiddleware(c, next)
+  if (c.get('userRole') !== 'admin') {
+    return c.json({ success: false, message: '관리자 권한이 필요합니다.' }, 403)
+  }
+}
 
 // Static files
 app.use('/static/*', serveStatic({ root: './public' }))
@@ -1822,10 +1872,22 @@ app.get('/about', (c) => {
 </html>`)
 })
 
-// ─── API ─────────────────────────────────────────────────────────────────────
-app.post('/api/contact', async (c) => {
-  const body = await c.req.json()
-  return c.json({ success: true, message: '상담 신청이 접수되었습니다.', data: body })
+// ════════════════════════════════════════════════════════════════
+//  API — 상담신청 (DB 저장)
+// ════════════════════════════════════════════════════════════════
+app.post('/api/contact', authMiddleware, async (c) => {
+  try {
+    const body = await c.req.json()
+    const { name, phone, email='', service_type='', message='' } = body
+    if (!name || !phone) return c.json({ success: false, message: '이름과 연락처는 필수입니다.' }, 400)
+    const userId = c.get('userId') || null
+    await c.env.DB.prepare(
+      `INSERT INTO consultations (name,phone,email,service_type,message,user_id) VALUES (?,?,?,?,?,?)`
+    ).bind(name, phone, email, service_type, message, userId).run()
+    return c.json({ success: true, message: '상담 신청이 접수되었습니다. 빠르게 연락드리겠습니다.' })
+  } catch (e: any) {
+    return c.json({ success: false, message: 'DB 오류: ' + e.message }, 500)
+  }
 })
 
 app.get('/api/calculate', (c) => {
@@ -1843,6 +1905,969 @@ app.get('/api/calculate', (c) => {
   const total = Math.max(base - discount - accum, base * 0.5)
 
   return c.json({ base, discount, accum, total: Math.round(total) })
+})
+
+// ════════════════════════════════════════════════════════════════
+//  AUTH API — 회원가입 / 로그인 / 내 정보 / 로그아웃
+// ════════════════════════════════════════════════════════════════
+
+/** 회원가입 */
+app.post('/api/auth/register', async (c) => {
+  try {
+    const { email, password, name, phone='' } = await c.req.json()
+    if (!email || !password || !name) return c.json({ success:false, message:'이메일·비밀번호·이름은 필수입니다.' }, 400)
+    if (password.length < 6) return c.json({ success:false, message:'비밀번호는 6자 이상이어야 합니다.' }, 400)
+    const exist = await c.env.DB.prepare('SELECT id FROM users WHERE email=?').bind(email).first()
+    if (exist) return c.json({ success:false, message:'이미 사용 중인 이메일입니다.' }, 409)
+    const hashed = await hashPassword(password)
+    const result = await c.env.DB.prepare(
+      'INSERT INTO users (email,password,name,phone) VALUES (?,?,?,?)'
+    ).bind(email, hashed, name, phone).run()
+    const token = await sign({ userId: result.meta.last_row_id, email, name, role:'user', exp: Math.floor(Date.now()/1000)+86400*30 }, JWT_SECRET)
+    return c.json({ success:true, message:'회원가입이 완료되었습니다.', token, user:{ id:result.meta.last_row_id, email, name, role:'user' } })
+  } catch(e:any) { return c.json({ success:false, message:'서버 오류: '+e.message }, 500) }
+})
+
+/** 로그인 */
+app.post('/api/auth/login', async (c) => {
+  try {
+    const { email, password } = await c.req.json()
+    if (!email || !password) return c.json({ success:false, message:'이메일과 비밀번호를 입력하세요.' }, 400)
+    const user = await c.env.DB.prepare('SELECT * FROM users WHERE email=? AND is_active=1').bind(email).first() as any
+    if (!user) return c.json({ success:false, message:'이메일 또는 비밀번호가 올바르지 않습니다.' }, 401)
+    const hashed = await hashPassword(password)
+    if (user.password !== hashed) return c.json({ success:false, message:'이메일 또는 비밀번호가 올바르지 않습니다.' }, 401)
+    const token = await sign({ userId: user.id, email: user.email, name: user.name, role: user.role, exp: Math.floor(Date.now()/1000)+86400*30 }, JWT_SECRET)
+    return c.json({ success:true, message:'로그인 성공', token, user:{ id:user.id, email:user.email, name:user.name, role:user.role } })
+  } catch(e:any) { return c.json({ success:false, message:'서버 오류: '+e.message }, 500) }
+})
+
+/** 내 정보 조회 */
+app.get('/api/auth/me', authMiddleware, async (c) => {
+  const userId = c.get('userId')
+  if (!userId) return c.json({ success:false, message:'로그인이 필요합니다.' }, 401)
+  const user = await c.env.DB.prepare('SELECT id,email,name,phone,role,created_at FROM users WHERE id=?').bind(userId).first()
+  return c.json({ success:true, user })
+})
+
+// ════════════════════════════════════════════════════════════════
+//  BOARD API — 게시판
+// ════════════════════════════════════════════════════════════════
+
+/** 카테고리 목록 */
+app.get('/api/board/categories', async (c) => {
+  const rows = await c.env.DB.prepare('SELECT * FROM board_categories WHERE is_active=1 ORDER BY sort_order').all()
+  return c.json({ success:true, categories: rows.results })
+})
+
+/** 게시글 목록 (페이지네이션) */
+app.get('/api/board/posts', authMiddleware, async (c) => {
+  const slug     = c.req.query('category') || ''
+  const page     = Math.max(1, parseInt(c.req.query('page') || '1'))
+  const pageSize = 15
+  const offset   = (page - 1) * pageSize
+  let categoryId: number | null = null
+  if (slug) {
+    const cat = await c.env.DB.prepare('SELECT id FROM board_categories WHERE slug=?').bind(slug).first() as any
+    if (cat) categoryId = cat.id
+  }
+  const where = categoryId ? 'WHERE p.category_id=?' : 'WHERE 1=1'
+  const params: any[] = categoryId ? [categoryId] : []
+  const countRow = await c.env.DB.prepare(
+    `SELECT COUNT(*) as cnt FROM posts p ${where} AND (p.is_private=0 OR p.user_id=?)`
+  ).bind(...params, c.get('userId') || 0).first() as any
+  const total = countRow?.cnt || 0
+  const posts = await c.env.DB.prepare(
+    `SELECT p.id,p.title,p.is_notice,p.is_private,p.view_count,p.created_at,
+            u.name as author_name, bc.name as category_name, bc.slug as category_slug,
+            (SELECT COUNT(*) FROM comments WHERE post_id=p.id) as comment_count
+     FROM posts p
+     JOIN users u ON p.user_id=u.id
+     JOIN board_categories bc ON p.category_id=bc.id
+     ${where} AND (p.is_private=0 OR p.user_id=?)
+     ORDER BY p.is_notice DESC, p.created_at DESC
+     LIMIT ? OFFSET ?`
+  ).bind(...params, c.get('userId') || 0, pageSize, offset).all()
+  return c.json({ success:true, posts: posts.results, total, page, pageSize, totalPages: Math.ceil(total/pageSize) })
+})
+
+/** 게시글 작성 */
+app.post('/api/board/posts', authMiddleware, async (c) => {
+  const userId = c.get('userId')
+  if (!userId) return c.json({ success:false, message:'로그인이 필요합니다.' }, 401)
+  const { category_id, title, content, is_private=0 } = await c.req.json()
+  if (!category_id || !title || !content) return c.json({ success:false, message:'카테고리·제목·내용은 필수입니다.' }, 400)
+  const result = await c.env.DB.prepare(
+    'INSERT INTO posts (category_id,user_id,title,content,is_private) VALUES (?,?,?,?,?)'
+  ).bind(category_id, userId, title, content, is_private ? 1 : 0).run()
+  return c.json({ success:true, id: result.meta.last_row_id })
+})
+
+/** 게시글 상세 */
+app.get('/api/board/posts/:id', authMiddleware, async (c) => {
+  const id = parseInt(c.req.param('id'))
+  const post = await c.env.DB.prepare(
+    `SELECT p.*,u.name as author_name,bc.name as category_name,bc.slug as category_slug
+     FROM posts p JOIN users u ON p.user_id=u.id JOIN board_categories bc ON p.category_id=bc.id
+     WHERE p.id=?`
+  ).bind(id).first() as any
+  if (!post) return c.json({ success:false, message:'게시글을 찾을 수 없습니다.' }, 404)
+  if (post.is_private && post.user_id !== c.get('userId') && c.get('userRole') !== 'admin') {
+    return c.json({ success:false, message:'비밀글입니다.' }, 403)
+  }
+  await c.env.DB.prepare('UPDATE posts SET view_count=view_count+1 WHERE id=?').bind(id).run()
+  const comments = await c.env.DB.prepare(
+    'SELECT cm.*,u.name as author_name FROM comments cm JOIN users u ON cm.user_id=u.id WHERE cm.post_id=? ORDER BY cm.created_at'
+  ).bind(id).all()
+  return c.json({ success:true, post, comments: comments.results })
+})
+
+/** 게시글 수정 */
+app.put('/api/board/posts/:id', authMiddleware, async (c) => {
+  const userId = c.get('userId')
+  if (!userId) return c.json({ success:false, message:'로그인이 필요합니다.' }, 401)
+  const id = parseInt(c.req.param('id'))
+  const post = await c.env.DB.prepare('SELECT * FROM posts WHERE id=?').bind(id).first() as any
+  if (!post) return c.json({ success:false, message:'게시글 없음' }, 404)
+  if (post.user_id !== userId && c.get('userRole') !== 'admin') return c.json({ success:false, message:'권한 없음' }, 403)
+  const { title, content, is_private } = await c.req.json()
+  await c.env.DB.prepare('UPDATE posts SET title=?,content=?,is_private=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
+    .bind(title, content, is_private ? 1 : 0, id).run()
+  return c.json({ success:true })
+})
+
+/** 게시글 삭제 */
+app.delete('/api/board/posts/:id', authMiddleware, async (c) => {
+  const userId = c.get('userId')
+  if (!userId) return c.json({ success:false, message:'로그인이 필요합니다.' }, 401)
+  const id = parseInt(c.req.param('id'))
+  const post = await c.env.DB.prepare('SELECT * FROM posts WHERE id=?').bind(id).first() as any
+  if (!post) return c.json({ success:false, message:'게시글 없음' }, 404)
+  if (post.user_id !== userId && c.get('userRole') !== 'admin') return c.json({ success:false, message:'권한 없음' }, 403)
+  await c.env.DB.prepare('DELETE FROM posts WHERE id=?').bind(id).run()
+  return c.json({ success:true })
+})
+
+/** 댓글 작성 */
+app.post('/api/board/posts/:id/comments', authMiddleware, async (c) => {
+  const userId = c.get('userId')
+  if (!userId) return c.json({ success:false, message:'로그인이 필요합니다.' }, 401)
+  const postId = parseInt(c.req.param('id'))
+  const { content } = await c.req.json()
+  if (!content) return c.json({ success:false, message:'내용을 입력하세요.' }, 400)
+  const result = await c.env.DB.prepare('INSERT INTO comments (post_id,user_id,content) VALUES (?,?,?)').bind(postId, userId, content).run()
+  return c.json({ success:true, id: result.meta.last_row_id })
+})
+
+/** 댓글 삭제 */
+app.delete('/api/board/comments/:id', authMiddleware, async (c) => {
+  const userId = c.get('userId')
+  if (!userId) return c.json({ success:false, message:'로그인이 필요합니다.' }, 401)
+  const id = parseInt(c.req.param('id'))
+  const cm = await c.env.DB.prepare('SELECT * FROM comments WHERE id=?').bind(id).first() as any
+  if (!cm) return c.json({ success:false, message:'댓글 없음' }, 404)
+  if (cm.user_id !== userId && c.get('userRole') !== 'admin') return c.json({ success:false, message:'권한 없음' }, 403)
+  await c.env.DB.prepare('DELETE FROM comments WHERE id=?').bind(id).run()
+  return c.json({ success:true })
+})
+
+// ════════════════════════════════════════════════════════════════
+//  ADMIN API — 관리자 전용
+// ════════════════════════════════════════════════════════════════
+
+/** 상담신청 목록 */
+app.get('/api/admin/consultations', requireAdmin, async (c) => {
+  const status = c.req.query('status') || ''
+  const where = status ? 'WHERE status=?' : ''
+  const rows = await c.env.DB.prepare(
+    `SELECT * FROM consultations ${where} ORDER BY created_at DESC LIMIT 100`
+  ).bind(...(status ? [status] : [])).all()
+  return c.json({ success:true, consultations: rows.results })
+})
+
+/** 상담 상태 변경 */
+app.put('/api/admin/consultations/:id', requireAdmin, async (c) => {
+  const id = parseInt(c.req.param('id'))
+  const { status } = await c.req.json()
+  await c.env.DB.prepare('UPDATE consultations SET status=? WHERE id=?').bind(status, id).run()
+  return c.json({ success:true })
+})
+
+/** 회원 목록 */
+app.get('/api/admin/users', requireAdmin, async (c) => {
+  const rows = await c.env.DB.prepare(
+    'SELECT id,email,name,phone,role,is_active,created_at FROM users ORDER BY created_at DESC LIMIT 200'
+  ).all()
+  return c.json({ success:true, users: rows.results })
+})
+
+/** 회원 활성/비활성 */
+app.put('/api/admin/users/:id', requireAdmin, async (c) => {
+  const id = parseInt(c.req.param('id'))
+  const { is_active } = await c.req.json()
+  await c.env.DB.prepare('UPDATE users SET is_active=? WHERE id=?').bind(is_active, id).run()
+  return c.json({ success:true })
+})
+
+/** 전체 게시글 목록 (관리자) */
+app.get('/api/admin/posts', requireAdmin, async (c) => {
+  const rows = await c.env.DB.prepare(
+    `SELECT p.id,p.title,p.is_notice,p.is_private,p.view_count,p.created_at,
+            u.name as author_name, bc.name as category_name
+     FROM posts p JOIN users u ON p.user_id=u.id JOIN board_categories bc ON p.category_id=bc.id
+     ORDER BY p.created_at DESC LIMIT 200`
+  ).all()
+  return c.json({ success:true, posts: rows.results })
+})
+
+/** 대시보드 통계 */
+app.get('/api/admin/stats', requireAdmin, async (c) => {
+  const [users, posts, consultNew, consultAll] = await Promise.all([
+    c.env.DB.prepare('SELECT COUNT(*) as cnt FROM users WHERE role="user"').first() as Promise<any>,
+    c.env.DB.prepare('SELECT COUNT(*) as cnt FROM posts').first() as Promise<any>,
+    c.env.DB.prepare('SELECT COUNT(*) as cnt FROM consultations WHERE status="new"').first() as Promise<any>,
+    c.env.DB.prepare('SELECT COUNT(*) as cnt FROM consultations').first() as Promise<any>,
+  ])
+  return c.json({ success:true, stats: {
+    totalUsers: users?.cnt || 0,
+    totalPosts: posts?.cnt || 0,
+    newConsultations: consultNew?.cnt || 0,
+    totalConsultations: consultAll?.cnt || 0,
+  }})
+})
+
+// ════════════════════════════════════════════════════════════════
+//  PAGES — 회원가입 / 로그인
+// ════════════════════════════════════════════════════════════════
+
+const authNavHTML = `
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-logo"><img src="/static/logo.png" alt="위드엔딩 Memorial Castle" class="nav-logo-img" /></a>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="/funeral" class="nav-link">무빈소 후불장례</a></li>
+        <li><a href="/membership" class="nav-link">위드 멤버십</a></li>
+        <li><a href="/asset" class="nav-link">자산관리</a></li>
+        <li><a href="/guide" class="nav-link">웰다잉 가이드</a></li>
+        <li><a href="/about" class="nav-link">회사소개</a></li>
+        <li><a href="/contact" class="nav-link emergency-nav-btn">📞 24시간 상담</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </nav>`
+
+const authFooterHTML = `
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div class="footer-legal">
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da580a08f30d94d502ce6d1" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>
+          <a href="https://titanium-neptune-11f.notion.site/3a907b799da5807a88d8c88d5751e5f1" target="_blank" rel="noopener noreferrer">이용약관</a>
+        </div>
+        <p class="footer-copy">© 2026. 주식회사 메모리얼캐슬. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>`
+
+// 회원가입 페이지
+app.get('/register', (c) => {
+  return c.html(`<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회원가입 — 위드엔딩</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+</head>
+<body>
+${authNavHTML}
+<main style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:100px 16px 60px;">
+  <div class="auth-card">
+    <div class="auth-logo"><img src="/static/logo.png" alt="위드엔딩" style="height:48px;" /></div>
+    <h2 class="auth-title">회원가입</h2>
+    <p class="auth-sub">위드엔딩 커뮤니티 회원이 되어주세요</p>
+    <div id="authMsg" class="auth-msg" style="display:none;"></div>
+    <form id="registerForm" class="auth-form">
+      <div class="auth-field">
+        <label>이름 <span class="req">*</span></label>
+        <input type="text" id="regName" placeholder="홍길동" required />
+      </div>
+      <div class="auth-field">
+        <label>이메일 <span class="req">*</span></label>
+        <input type="email" id="regEmail" placeholder="example@email.com" required />
+      </div>
+      <div class="auth-field">
+        <label>비밀번호 <span class="req">*</span> <small>(6자 이상)</small></label>
+        <input type="password" id="regPw" placeholder="••••••••" required />
+      </div>
+      <div class="auth-field">
+        <label>비밀번호 확인 <span class="req">*</span></label>
+        <input type="password" id="regPw2" placeholder="••••••••" required />
+      </div>
+      <div class="auth-field">
+        <label>연락처</label>
+        <input type="tel" id="regPhone" placeholder="010-0000-0000" />
+      </div>
+      <button type="submit" class="btn btn-primary auth-submit" id="regBtn">
+        <i class="fas fa-user-plus"></i> 회원가입
+      </button>
+    </form>
+    <p class="auth-switch">이미 계정이 있으신가요? <a href="/login">로그인</a></p>
+  </div>
+</main>
+${authFooterHTML}
+<script src="/static/main.js"></script>
+<script>
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('regBtn');
+  const msg = document.getElementById('authMsg');
+  const pw = document.getElementById('regPw').value;
+  const pw2 = document.getElementById('regPw2').value;
+  if (pw !== pw2) { showMsg('비밀번호가 일치하지 않습니다.', 'error'); return; }
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 처리 중...';
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        name: document.getElementById('regName').value,
+        email: document.getElementById('regEmail').value,
+        password: pw,
+        phone: document.getElementById('regPhone').value
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem('we_token', data.token);
+      localStorage.setItem('we_user', JSON.stringify(data.user));
+      showMsg('🎉 회원가입 완료! 잠시 후 커뮤니티로 이동합니다.', 'success');
+      setTimeout(() => location.href = '/board', 1500);
+    } else {
+      showMsg(data.message, 'error');
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> 회원가입';
+    }
+  } catch(e) { showMsg('네트워크 오류가 발생했습니다.', 'error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> 회원가입'; }
+});
+function showMsg(text, type) {
+  const el = document.getElementById('authMsg');
+  el.textContent = text; el.className = 'auth-msg auth-msg-' + type; el.style.display = 'block';
+}
+</script>
+</body></html>`)
+})
+
+// 로그인 페이지
+app.get('/login', (c) => {
+  return c.html(`<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>로그인 — 위드엔딩</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+</head>
+<body>
+${authNavHTML}
+<main style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:100px 16px 60px;">
+  <div class="auth-card">
+    <div class="auth-logo"><img src="/static/logo.png" alt="위드엔딩" style="height:48px;" /></div>
+    <h2 class="auth-title">로그인</h2>
+    <p class="auth-sub">위드엔딩 커뮤니티에 오신 것을 환영합니다</p>
+    <div id="authMsg" class="auth-msg" style="display:none;"></div>
+    <form id="loginForm" class="auth-form">
+      <div class="auth-field">
+        <label>이메일 <span class="req">*</span></label>
+        <input type="email" id="loginEmail" placeholder="example@email.com" required />
+      </div>
+      <div class="auth-field">
+        <label>비밀번호 <span class="req">*</span></label>
+        <input type="password" id="loginPw" placeholder="••••••••" required />
+      </div>
+      <button type="submit" class="btn btn-primary auth-submit" id="loginBtn">
+        <i class="fas fa-sign-in-alt"></i> 로그인
+      </button>
+    </form>
+    <p class="auth-switch">계정이 없으신가요? <a href="/register">회원가입</a></p>
+  </div>
+</main>
+${authFooterHTML}
+<script src="/static/main.js"></script>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로그인 중...';
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPw').value })
+    });
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem('we_token', data.token);
+      localStorage.setItem('we_user', JSON.stringify(data.user));
+      const dest = new URLSearchParams(location.search).get('redirect') || (data.user.role==='admin' ? '/admin' : '/board');
+      location.href = dest;
+    } else {
+      showMsg(data.message, 'error');
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> 로그인';
+    }
+  } catch(e) { showMsg('네트워크 오류', 'error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> 로그인'; }
+});
+function showMsg(text, type) {
+  const el = document.getElementById('authMsg');
+  el.textContent = text; el.className = 'auth-msg auth-msg-' + type; el.style.display = 'block';
+}
+</script>
+</body></html>`)
+})
+
+// ════════════════════════════════════════════════════════════════
+//  PAGE — 게시판 목록
+// ════════════════════════════════════════════════════════════════
+app.get('/board', (c) => {
+  const category = c.req.query('category') || 'free'
+  return c.html(`<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>커뮤니티 게시판 — 위드엔딩</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+</head>
+<body>
+${authNavHTML}
+<section class="page-hero" style="background:linear-gradient(135deg,#0d1b35 0%,#1a2f5a 100%);padding:80px 0 60px;">
+  <div class="page-hero-content">
+    <span class="section-tag-white">커뮤니티</span>
+    <h1 style="color:#fff;font-size:2.2rem;margin-bottom:12px;">위드엔딩 커뮤니티</h1>
+    <p style="color:rgba(255,255,255,.7);">후기·정보·이야기를 자유롭게 나눠주세요</p>
+  </div>
+</section>
+<main class="section-padding">
+  <div class="container">
+    <!-- 상단: 로그인 상태 + 글쓰기 버튼 -->
+    <div class="board-topbar">
+      <div id="userStatus" class="board-user-status"></div>
+      <button id="writeBtn" class="btn btn-primary" onclick="goWrite()" style="display:none;">
+        <i class="fas fa-pen"></i> 글쓰기
+      </button>
+    </div>
+    <!-- 카테고리 탭 -->
+    <div class="board-tabs" id="boardTabs"></div>
+    <!-- 게시글 목록 -->
+    <div id="boardList" class="board-list-wrap">
+      <div class="board-loading"><i class="fas fa-spinner fa-spin"></i> 불러오는 중...</div>
+    </div>
+    <!-- 페이지네이션 -->
+    <div id="boardPaging" class="board-paging"></div>
+  </div>
+</main>
+${authFooterHTML}
+<a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+<script src="/static/main.js"></script>
+<script>
+const token = localStorage.getItem('we_token');
+const user  = JSON.parse(localStorage.getItem('we_user') || 'null');
+let currentCategory = '${category}';
+let currentPage = 1;
+
+// 사용자 상태 표시
+const statusEl = document.getElementById('userStatus');
+const writeBtn = document.getElementById('writeBtn');
+if (user) {
+  statusEl.innerHTML = '<i class="fas fa-user-circle"></i> ' + user.name + '님 환영합니다 &nbsp;<button class="btn-text-sm" onclick="logout()">로그아웃</button>' + (user.role==='admin' ? ' &nbsp;<a href="/admin" class="btn-text-sm admin-badge"><i class="fas fa-cog"></i> 관리자</a>' : '');
+  writeBtn.style.display = 'inline-flex';
+} else {
+  statusEl.innerHTML = '<a href="/login?redirect=/board" class="btn btn-sm btn-outline"><i class="fas fa-sign-in-alt"></i> 로그인</a> &nbsp;<a href="/register" class="btn btn-sm btn-primary"><i class="fas fa-user-plus"></i> 회원가입</a>';
+}
+
+function logout() { localStorage.removeItem('we_token'); localStorage.removeItem('we_user'); location.reload(); }
+function goWrite() {
+  if (!user) { location.href='/login?redirect=/board/write'; return; }
+  location.href='/board/write?category='+currentCategory;
+}
+
+// 카테고리 탭 로드
+fetch('/api/board/categories').then(r=>r.json()).then(data=>{
+  const tabs = document.getElementById('boardTabs');
+  tabs.innerHTML = data.categories.map(cat=>
+    '<button class="board-tab'+(cat.slug===currentCategory?' active':'')+'" onclick="switchCat(\''+cat.slug+'\')">'+cat.name+'</button>'
+  ).join('');
+  loadPosts();
+});
+
+function switchCat(slug) {
+  currentCategory = slug; currentPage = 1;
+  document.querySelectorAll('.board-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  loadPosts();
+}
+
+function loadPosts() {
+  const listEl = document.getElementById('boardList');
+  listEl.innerHTML = '<div class="board-loading"><i class="fas fa-spinner fa-spin"></i> 불러오는 중...</div>';
+  const headers = token ? {'Authorization':'Bearer '+token} : {};
+  fetch('/api/board/posts?category='+currentCategory+'&page='+currentPage, {headers})
+    .then(r=>r.json()).then(data=>{
+      if (!data.posts || !data.posts.length) {
+        listEl.innerHTML = '<div class="board-empty"><i class="fas fa-inbox"></i><p>아직 게시글이 없습니다.<br/>첫 번째 글을 남겨보세요!</p></div>';
+        document.getElementById('boardPaging').innerHTML = '';
+        return;
+      }
+      listEl.innerHTML = '<table class="board-table"><thead><tr><th style="width:60px">번호</th><th>제목</th><th style="width:90px">작성자</th><th style="width:90px">날짜</th><th style="width:60px">조회</th></tr></thead><tbody>'
+        + data.posts.map((p,i)=>{
+            const num = p.is_notice ? '<span class="badge-notice">공지</span>' : (data.total - (currentPage-1)*data.pageSize - i);
+            const lock = p.is_private ? ' 🔒' : '';
+            const cmts = p.comment_count > 0 ? ' <span class="badge-cmt">['+p.comment_count+']</span>' : '';
+            const date = p.created_at ? p.created_at.substring(0,10) : '';
+            return '<tr class="'+(p.is_notice?'notice-row':'')+'"><td class="td-num">'+num+'</td><td class="td-title"><a href="/board/'+p.id+'">'+p.title+lock+cmts+'</a></td><td class="td-author">'+p.author_name+'</td><td class="td-date">'+date+'</td><td class="td-view">'+p.view_count+'</td></tr>';
+          }).join('')
+        + '</tbody></table>';
+      // 페이지네이션
+      const pagingEl = document.getElementById('boardPaging');
+      if (data.totalPages > 1) {
+        let html = '';
+        for (let i=1; i<=data.totalPages; i++) {
+          html += '<button class="paging-btn'+(i===currentPage?' active':'')+'" onclick="gotoPage('+i+')">'+i+'</button>';
+        }
+        pagingEl.innerHTML = html;
+      } else { pagingEl.innerHTML = ''; }
+    }).catch(()=>{ listEl.innerHTML = '<div class="board-empty"><i class="fas fa-exclamation-circle"></i><p>불러오기 실패. 새로고침 해주세요.</p></div>'; });
+}
+
+function gotoPage(p) { currentPage = p; loadPosts(); window.scrollTo(0,0); }
+</script>
+</body></html>`)
+})
+
+// ════════════════════════════════════════════════════════════════
+//  PAGE — 게시글 작성
+// ════════════════════════════════════════════════════════════════
+app.get('/board/write', (c) => {
+  return c.html(`<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>글쓰기 — 위드엔딩</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+</head>
+<body>
+${authNavHTML}
+<main style="padding:100px 16px 60px;">
+  <div class="container" style="max-width:800px;">
+    <div class="write-header">
+      <h2 class="write-title"><i class="fas fa-pen"></i> 새 글 쓰기</h2>
+      <a href="/board" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> 목록으로</a>
+    </div>
+    <div id="writeMsg" class="auth-msg" style="display:none;"></div>
+    <div id="writeAuth">
+      <p style="text-align:center;padding:40px;color:#888;">로그인 후 글을 작성할 수 있습니다. <a href="/login?redirect=/board/write">로그인하기</a></p>
+    </div>
+    <form id="writeForm" class="write-form" style="display:none;">
+      <div class="auth-field">
+        <label>카테고리 <span class="req">*</span></label>
+        <select id="wCat" class="write-select" required></select>
+      </div>
+      <div class="auth-field">
+        <label>제목 <span class="req">*</span></label>
+        <input type="text" id="wTitle" placeholder="제목을 입력하세요" required />
+      </div>
+      <div class="auth-field">
+        <label>내용 <span class="req">*</span></label>
+        <textarea id="wContent" class="write-textarea" placeholder="내용을 자유롭게 작성해주세요." required></textarea>
+      </div>
+      <div class="write-options">
+        <label class="checkbox-label">
+          <input type="checkbox" id="wPrivate" /> 비밀글로 작성
+        </label>
+      </div>
+      <div class="write-btns">
+        <a href="/board" class="btn btn-outline">취소</a>
+        <button type="submit" class="btn btn-primary" id="wSubmitBtn"><i class="fas fa-save"></i> 등록하기</button>
+      </div>
+    </form>
+  </div>
+</main>
+${authFooterHTML}
+<script src="/static/main.js"></script>
+<script>
+const token = localStorage.getItem('we_token');
+const user  = JSON.parse(localStorage.getItem('we_user') || 'null');
+const defaultCat = new URLSearchParams(location.search).get('category') || 'free';
+
+if (!user || !token) {
+  document.getElementById('writeAuth').style.display = 'block';
+} else {
+  document.getElementById('writeAuth').style.display = 'none';
+  document.getElementById('writeForm').style.display = 'block';
+  fetch('/api/board/categories').then(r=>r.json()).then(data=>{
+    const sel = document.getElementById('wCat');
+    sel.innerHTML = data.categories.filter(c=>c.slug!=='notice'||user.role==='admin').map(c=>
+      '<option value="'+c.id+'"'+(c.slug===defaultCat?' selected':'')+'>'+c.name+'</option>'
+    ).join('');
+  });
+}
+
+document.getElementById('writeForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('wSubmitBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 등록 중...';
+  try {
+    const res = await fetch('/api/board/posts', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({
+        category_id: parseInt(document.getElementById('wCat').value),
+        title: document.getElementById('wTitle').value,
+        content: document.getElementById('wContent').value,
+        is_private: document.getElementById('wPrivate').checked ? 1 : 0
+      })
+    });
+    const data = await res.json();
+    if (data.success) { location.href = '/board/' + data.id; }
+    else { showMsg(data.message, 'error'); btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> 등록하기'; }
+  } catch(e) { showMsg('오류 발생', 'error'); btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> 등록하기'; }
+});
+function showMsg(t,type){ const el=document.getElementById('writeMsg'); el.textContent=t; el.className='auth-msg auth-msg-'+type; el.style.display='block'; }
+</script>
+</body></html>`)
+})
+
+// ════════════════════════════════════════════════════════════════
+//  PAGE — 게시글 상세
+// ════════════════════════════════════════════════════════════════
+app.get('/board/:id', (c) => {
+  const id = c.req.param('id')
+  return c.html(`<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>게시글 — 위드엔딩</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+</head>
+<body>
+${authNavHTML}
+<main style="padding:100px 16px 60px;">
+  <div class="container" style="max-width:800px;">
+    <div id="postContent"><div class="board-loading"><i class="fas fa-spinner fa-spin"></i> 불러오는 중...</div></div>
+    <div id="commentSection" style="display:none;margin-top:40px;">
+      <h4 class="comment-title"><i class="fas fa-comments"></i> 댓글 <span id="cmtCount">0</span>개</h4>
+      <div id="commentList"></div>
+      <div id="commentForm" style="display:none;margin-top:16px;">
+        <textarea id="cmtContent" class="write-textarea" style="height:90px;" placeholder="댓글을 입력하세요..."></textarea>
+        <div style="text-align:right;margin-top:8px;">
+          <button class="btn btn-primary btn-sm" onclick="submitComment()"><i class="fas fa-paper-plane"></i> 댓글 등록</button>
+        </div>
+      </div>
+      <div id="cmtLoginNote" style="display:none;padding:16px;text-align:center;color:#888;font-size:.9rem;">
+        <a href="/login?redirect=/board/${id}">로그인</a> 후 댓글을 남길 수 있습니다.
+      </div>
+    </div>
+  </div>
+</main>
+${authFooterHTML}
+<a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+<script src="/static/main.js"></script>
+<script>
+const token = localStorage.getItem('we_token');
+const user  = JSON.parse(localStorage.getItem('we_user') || 'null');
+const postId = ${id};
+let postData = null;
+
+const headers = token ? {'Authorization':'Bearer '+token} : {};
+fetch('/api/board/posts/'+postId, {headers}).then(r=>r.json()).then(data=>{
+  if (!data.success) {
+    document.getElementById('postContent').innerHTML = '<div class="board-empty"><i class="fas fa-lock"></i><p>'+data.message+'</p><a href="/board" class="btn btn-outline" style="margin-top:16px;">목록으로</a></div>';
+    return;
+  }
+  postData = data.post;
+  const p = data.post;
+  const isMine = user && (user.id === p.user_id || user.role === 'admin');
+  const date = p.created_at ? p.created_at.substring(0,10) : '';
+  document.getElementById('postContent').innerHTML =
+    '<div class="post-breadcrumb"><a href="/board">커뮤니티</a> &gt; <a href="/board?category='+p.category_slug+'">'+p.category_name+'</a></div>'
+    +'<div class="post-header">'
+      +(p.is_notice?'<span class="badge-notice" style="margin-bottom:8px;display:inline-block;">공지</span>':'')
+      +'<h2 class="post-title">'+p.title+'</h2>'
+      +'<div class="post-meta"><span><i class="fas fa-user"></i> '+p.author_name+'</span><span><i class="fas fa-calendar"></i> '+date+'</span><span><i class="fas fa-eye"></i> '+p.view_count+'</span></div>'
+    +'</div>'
+    +'<div class="post-body">'+p.content.replace(/\\n/g,'<br/>')+'</div>'
+    +'<div class="post-actions">'
+      +'<a href="/board?category='+p.category_slug+'" class="btn btn-outline btn-sm"><i class="fas fa-list"></i> 목록</a>'
+      +(isMine ? '<button class="btn btn-outline btn-sm" onclick="editPost()"><i class="fas fa-edit"></i> 수정</button><button class="btn btn-sm" style="background:#e74c3c;color:#fff;" onclick="deletePost()"><i class="fas fa-trash"></i> 삭제</button>' : '')
+    +'</div>';
+
+  // 댓글
+  document.getElementById('commentSection').style.display = 'block';
+  renderComments(data.comments);
+  document.getElementById('cmtCount').textContent = data.comments.length;
+  if (user) { document.getElementById('commentForm').style.display = 'block'; }
+  else { document.getElementById('cmtLoginNote').style.display = 'block'; }
+});
+
+function renderComments(comments) {
+  const el = document.getElementById('commentList');
+  if (!comments || !comments.length) { el.innerHTML = '<p style="color:#aaa;font-size:.9rem;padding:12px 0;">아직 댓글이 없습니다.</p>'; return; }
+  el.innerHTML = comments.map(cm => {
+    const isMine = user && (user.id === cm.user_id || user.role === 'admin');
+    const date = cm.created_at ? cm.created_at.substring(0,10) : '';
+    return '<div class="comment-item"><div class="comment-header"><span class="comment-author"><i class="fas fa-user-circle"></i> '+cm.author_name+'</span><span class="comment-date">'+date+'</span>'+(isMine?'<button class="btn-del-cmt" onclick="deleteComment('+cm.id+')"><i class="fas fa-times"></i></button>':'')+'</div><p class="comment-body">'+cm.content.replace(/\\n/g,'<br/>')+'</p></div>';
+  }).join('');
+}
+
+async function submitComment() {
+  const content = document.getElementById('cmtContent').value.trim();
+  if (!content) return alert('댓글을 입력해주세요.');
+  const res = await fetch('/api/board/posts/'+postId+'/comments', {
+    method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+    body: JSON.stringify({content})
+  });
+  const data = await res.json();
+  if (data.success) { document.getElementById('cmtContent').value=''; location.reload(); }
+  else alert(data.message);
+}
+
+async function deleteComment(id) {
+  if (!confirm('댓글을 삭제하시겠습니까?')) return;
+  const res = await fetch('/api/board/comments/'+id, {method:'DELETE', headers:{'Authorization':'Bearer '+token}});
+  const data = await res.json();
+  if (data.success) location.reload();
+  else alert(data.message);
+}
+
+function editPost() { location.href = '/board/edit/'+postId; }
+async function deletePost() {
+  if (!confirm('게시글을 삭제하시겠습니까?')) return;
+  const res = await fetch('/api/board/posts/'+postId, {method:'DELETE', headers:{'Authorization':'Bearer '+token}});
+  const data = await res.json();
+  if (data.success) { alert('삭제되었습니다.'); location.href = '/board?category='+(postData?.category_slug||'free'); }
+  else alert(data.message);
+}
+</script>
+</body></html>`)
+})
+
+// ════════════════════════════════════════════════════════════════
+//  PAGE — 게시글 수정
+// ════════════════════════════════════════════════════════════════
+app.get('/board/edit/:id', (c) => {
+  const id = c.req.param('id')
+  return c.html(`<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>게시글 수정 — 위드엔딩</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+</head>
+<body>
+${authNavHTML}
+<main style="padding:100px 16px 60px;">
+  <div class="container" style="max-width:800px;">
+    <div class="write-header">
+      <h2 class="write-title"><i class="fas fa-edit"></i> 게시글 수정</h2>
+      <a href="/board/${id}" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> 돌아가기</a>
+    </div>
+    <div id="editMsg" class="auth-msg" style="display:none;"></div>
+    <form id="editForm" class="write-form">
+      <div class="auth-field">
+        <label>제목 <span class="req">*</span></label>
+        <input type="text" id="eTitle" required />
+      </div>
+      <div class="auth-field">
+        <label>내용 <span class="req">*</span></label>
+        <textarea id="eContent" class="write-textarea" required></textarea>
+      </div>
+      <div class="write-options">
+        <label class="checkbox-label"><input type="checkbox" id="ePrivate" /> 비밀글</label>
+      </div>
+      <div class="write-btns">
+        <a href="/board/${id}" class="btn btn-outline">취소</a>
+        <button type="submit" class="btn btn-primary" id="eSubmitBtn"><i class="fas fa-save"></i> 저장하기</button>
+      </div>
+    </form>
+  </div>
+</main>
+${authFooterHTML}
+<script src="/static/main.js"></script>
+<script>
+const token = localStorage.getItem('we_token');
+const postId = ${id};
+const headers = token ? {'Authorization':'Bearer '+token} : {};
+fetch('/api/board/posts/'+postId, {headers}).then(r=>r.json()).then(data=>{
+  if (!data.success) { alert(data.message); location.href='/board'; return; }
+  document.getElementById('eTitle').value   = data.post.title;
+  document.getElementById('eContent').value = data.post.content;
+  document.getElementById('ePrivate').checked = data.post.is_private === 1;
+});
+document.getElementById('editForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('eSubmitBtn');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> 저장 중...';
+  const res = await fetch('/api/board/posts/'+postId, {
+    method:'PUT', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+    body: JSON.stringify({
+      title: document.getElementById('eTitle').value,
+      content: document.getElementById('eContent').value,
+      is_private: document.getElementById('ePrivate').checked ? 1 : 0
+    })
+  });
+  const data = await res.json();
+  if (data.success) { location.href='/board/'+postId; }
+  else { document.getElementById('editMsg').textContent=data.message; document.getElementById('editMsg').style.display='block'; btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> 저장하기'; }
+});
+</script>
+</body></html>`)
+})
+
+// ════════════════════════════════════════════════════════════════
+//  PAGE — 관리자 대시보드
+// ════════════════════════════════════════════════════════════════
+app.get('/admin', (c) => {
+  return c.html(`<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>관리자 대시보드 — 위드엔딩</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+</head>
+<body style="background:#f0f2f5;">
+<nav class="navbar" id="navbar" style="background:#0d1b35;">
+  <div class="nav-container">
+    <a href="/" class="nav-logo"><img src="/static/logo.png" alt="위드엔딩" class="nav-logo-img" /></a>
+    <div style="color:#d4af37;font-weight:700;font-size:.95rem;"><i class="fas fa-shield-alt"></i> 관리자 대시보드</div>
+    <button onclick="adminLogout()" class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);">
+      <i class="fas fa-sign-out-alt"></i> 로그아웃
+    </button>
+  </div>
+</nav>
+<main style="padding:80px 16px 60px;">
+  <div class="container">
+    <div id="adminCheck" style="text-align:center;padding:60px;"><div class="board-loading"><i class="fas fa-spinner fa-spin"></i> 권한 확인 중...</div></div>
+    <div id="adminContent" style="display:none;">
+      <!-- 통계 카드 -->
+      <div class="admin-stats-grid" id="statsGrid"></div>
+      <!-- 탭 -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('consult',this)"><i class="fas fa-headset"></i> 상담신청</button>
+        <button class="admin-tab" onclick="switchAdminTab('users',this)"><i class="fas fa-users"></i> 회원관리</button>
+        <button class="admin-tab" onclick="switchAdminTab('posts',this)"><i class="fas fa-file-alt"></i> 게시글관리</button>
+      </div>
+      <!-- 상담신청 -->
+      <div id="tab-consult" class="admin-panel">
+        <div class="admin-panel-header">
+          <h3>상담신청 목록</h3>
+          <select id="consultFilter" onchange="loadConsultations()" class="write-select" style="width:140px;">
+            <option value="">전체</option>
+            <option value="new">신규</option>
+            <option value="contacted">연락완료</option>
+            <option value="done">처리완료</option>
+          </select>
+        </div>
+        <div id="consultList" class="admin-table-wrap"><div class="board-loading"><i class="fas fa-spinner fa-spin"></i></div></div>
+      </div>
+      <!-- 회원관리 -->
+      <div id="tab-users" class="admin-panel" style="display:none;">
+        <div class="admin-panel-header"><h3>회원 목록</h3></div>
+        <div id="userList" class="admin-table-wrap"><div class="board-loading"><i class="fas fa-spinner fa-spin"></i></div></div>
+      </div>
+      <!-- 게시글관리 -->
+      <div id="tab-posts" class="admin-panel" style="display:none;">
+        <div class="admin-panel-header"><h3>전체 게시글</h3></div>
+        <div id="postList" class="admin-table-wrap"><div class="board-loading"><i class="fas fa-spinner fa-spin"></i></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="/static/main.js"></script>
+<script>
+const token = localStorage.getItem('we_token');
+const user  = JSON.parse(localStorage.getItem('we_user') || 'null');
+
+if (!user || user.role !== 'admin') {
+  document.getElementById('adminCheck').innerHTML = '<div class="board-empty"><i class="fas fa-lock" style="font-size:3rem;color:#e74c3c;"></i><p style="margin-top:16px;">관리자 권한이 필요합니다.<br/><a href="/login?redirect=/admin">관리자로 로그인</a></p></div>';
+} else {
+  document.getElementById('adminCheck').style.display = 'none';
+  document.getElementById('adminContent').style.display = 'block';
+  loadStats(); loadConsultations(); loadUsers(); loadAdminPosts();
+}
+
+function adminLogout() { localStorage.removeItem('we_token'); localStorage.removeItem('we_user'); location.href='/login'; }
+function authH() { return {'Authorization':'Bearer '+token,'Content-Type':'application/json'}; }
+
+async function loadStats() {
+  const data = await fetch('/api/admin/stats',{headers:authH()}).then(r=>r.json());
+  const s = data.stats || {};
+  document.getElementById('statsGrid').innerHTML = [
+    {icon:'fa-users',      label:'전체 회원',    val:s.totalUsers,        color:'#3498db'},
+    {icon:'fa-headset',    label:'신규 상담',    val:s.newConsultations,  color:'#e74c3c'},
+    {icon:'fa-file-alt',   label:'전체 게시글',  val:s.totalPosts,        color:'#27ae60'},
+    {icon:'fa-clipboard',  label:'총 상담건',    val:s.totalConsultations,color:'#f39c12'},
+  ].map(c=>'<div class="admin-stat-card" style="border-top:4px solid '+c.color+'"><i class="fas '+c.icon+'" style="color:'+c.color+';font-size:2rem;margin-bottom:8px;"></i><div class="admin-stat-val">'+c.val+'</div><div class="admin-stat-label">'+c.label+'</div></div>').join('');
+}
+
+async function loadConsultations() {
+  const status = document.getElementById('consultFilter')?.value || '';
+  const data = await fetch('/api/admin/consultations?status='+status,{headers:authH()}).then(r=>r.json());
+  const list = document.getElementById('consultList');
+  if (!data.consultations?.length) { list.innerHTML='<p class="empty-msg">상담 신청이 없습니다.</p>'; return; }
+  list.innerHTML='<table class="board-table"><thead><tr><th>이름</th><th>연락처</th><th>서비스</th><th>상태</th><th>신청일</th><th>처리</th></tr></thead><tbody>'
+    +data.consultations.map(c=>'<tr><td>'+c.name+'</td><td>'+c.phone+'</td><td>'+(c.service_type||'-')+'</td><td><span class="badge-status status-'+c.status+'">'+{new:'신규',contacted:'연락완료',done:'처리완료'}[c.status]+'</span></td><td>'+(c.created_at?c.created_at.substring(0,10):'')+'</td><td><select onchange="updateConsult('+c.id+',this.value)" class="write-select" style="width:110px;padding:4px 8px;font-size:.8rem;"><option value="new"'+(c.status==='new'?' selected':'')+'>신규</option><option value="contacted"'+(c.status==='contacted'?' selected':'')+'>연락완료</option><option value="done"'+(c.status==='done'?' selected':'')+'>처리완료</option></select></td></tr>').join('')
+    +'</tbody></table>';
+}
+
+async function updateConsult(id, status) {
+  await fetch('/api/admin/consultations/'+id,{method:'PUT',headers:authH(),body:JSON.stringify({status})});
+  loadStats();
+}
+
+async function loadUsers() {
+  const data = await fetch('/api/admin/users',{headers:authH()}).then(r=>r.json());
+  const list = document.getElementById('userList');
+  if (!data.users?.length) { list.innerHTML='<p class="empty-msg">회원이 없습니다.</p>'; return; }
+  list.innerHTML='<table class="board-table"><thead><tr><th>이름</th><th>이메일</th><th>연락처</th><th>권한</th><th>가입일</th><th>상태</th></tr></thead><tbody>'
+    +data.users.map(u=>'<tr><td>'+u.name+'</td><td>'+u.email+'</td><td>'+(u.phone||'-')+'</td><td><span class="badge-role role-'+u.role+'">'+{admin:'관리자',user:'일반'}[u.role]+'</span></td><td>'+(u.created_at?u.created_at.substring(0,10):'')+'</td><td><button class="btn btn-sm '+(u.is_active?'btn-outline':'btn-primary')+'" onclick="toggleUser('+u.id+','+(u.is_active?0:1)+')">'+(u.is_active?'비활성화':'활성화')+'</button></td></tr>').join('')
+    +'</tbody></table>';
+}
+
+async function toggleUser(id, active) {
+  await fetch('/api/admin/users/'+id,{method:'PUT',headers:authH(),body:JSON.stringify({is_active:active})});
+  loadUsers(); loadStats();
+}
+
+async function loadAdminPosts() {
+  const data = await fetch('/api/admin/posts',{headers:authH()}).then(r=>r.json());
+  const list = document.getElementById('postList');
+  if (!data.posts?.length) { list.innerHTML='<p class="empty-msg">게시글이 없습니다.</p>'; return; }
+  list.innerHTML='<table class="board-table"><thead><tr><th>제목</th><th>카테고리</th><th>작성자</th><th>조회</th><th>작성일</th><th>관리</th></tr></thead><tbody>'
+    +data.posts.map(p=>'<tr><td><a href="/board/'+p.id+'" target="_blank" style="color:var(--navy);">'+p.title+'</a></td><td>'+p.category_name+'</td><td>'+p.author_name+'</td><td>'+p.view_count+'</td><td>'+(p.created_at?p.created_at.substring(0,10):'')+'</td><td><button class="btn btn-sm" style="background:#e74c3c;color:#fff;" onclick="adminDelPost('+p.id+')"><i class="fas fa-trash"></i></button></td></tr>').join('')
+    +'</tbody></table>';
+}
+
+async function adminDelPost(id) {
+  if (!confirm('게시글을 삭제하시겠습니까?')) return;
+  await fetch('/api/board/posts/'+id,{method:'DELETE',headers:authH()});
+  loadAdminPosts(); loadStats();
+}
+
+function switchAdminTab(name, btn) {
+  document.querySelectorAll('.admin-panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).style.display='block';
+  btn.classList.add('active');
+}
+</script>
+</body></html>`)
 })
 
 export default app
