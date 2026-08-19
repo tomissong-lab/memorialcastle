@@ -894,7 +894,9 @@ app.get('/funeral', (c) => {
           <p class="ungu-sub">한 사람의 생이 완성되는 순간,<br />메모리얼캐슬은 그 존엄을 끝까지 지켜드립니다</p>
           <p class="ungu-body">발인에서 장지까지 이어지는 그 길은, 단순한 이동이 아니라 한 생이 살아온 무게를 마지막으로 배웅하는 시간입니다. 전문 장례지도사가 처음부터 끝까지 직접 동행하며, 고인의 걸음 하나하나에 예(禮)를 다합니다. 메모리얼캐슬은 고인과 유가족 모두를 위한 품격 있는 운구의전을 정성껏 약속드립니다.</p>
         </div>
-        <div class="ungu-hero-icon">🎌</div>
+        <div class="ungu-hero-img-wrap">
+          <img src="/static/funeral-ceremony.jpg" alt="메모리얼캐슬 운구의전" class="ungu-hero-img" />
+        </div>
       </div>
     </div>
   </section>
@@ -1850,6 +1852,124 @@ app.get('/about', (c) => {
             <p>이용하신 만큼만<br /><strong>후불로 정산합니다</strong></p>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑤ 비즈니스 레이어 — 3단 사업 구조 -->
+  <section class="section-padding" style="background:#f8f9fb;">
+    <div class="container">
+      <div class="section-header" style="margin-bottom:48px;">
+        <span class="section-tag">사업 구조</span>
+        <h2 class="section-title">메모리얼캐슬이 만드는<br />3개의 비즈니스 레이어</h2>
+        <p class="section-sub">장례 운영부터 AI 플랫폼, 공공 솔루션까지 — 신뢰를 기반으로 확장합니다</p>
+      </div>
+      <div class="biz-layer-grid">
+
+        <!-- LAYER 1 -->
+        <div class="biz-layer-card biz-layer-b2b">
+          <div class="biz-layer-header">
+            <span class="biz-layer-badge">LAYER 1 · B2B</span>
+            <p class="biz-layer-kw">신뢰 선점 · 핵심 수익</p>
+            <h3 class="biz-layer-title">장례 운영 <em>SaaS</em></h3>
+            <p class="biz-layer-sub">월정액 · 코어 베이스</p>
+          </div>
+          <ul class="biz-layer-list">
+            <li>
+              <strong>스마트 견적 엔진</strong>
+              <span>사전 PMS 표준 견적 자동생성 · 발송</span>
+            </li>
+            <li>
+              <strong>장례진행 PMS</strong>
+              <span>건별 체크리스트 · P50 90분 응답</span>
+            </li>
+            <li>
+              <strong>실시간 정산</strong>
+              <span>소진량 즉시 입력 → 상주 앱 동기화 (zero 0)</span>
+            </li>
+            <li>
+              <strong>정산·세금 자동화</strong>
+              <span>항목별 자동합산 · 원클릭 발행</span>
+            </li>
+            <li>
+              <strong>CRM · 리드관리</strong>
+              <span>상담이력 자동저장 · 인력이탈 무관</span>
+            </li>
+            <li>
+              <strong>사후케어 자동화</strong>
+              <span>49재 · 기일 · 상속 알림 · B2B2C 쉐어</span>
+            </li>
+            <li>
+              <strong>부고 · 조의금</strong>
+              <span>온라인 조의금 수령 · PG마진</span>
+            </li>
+            <li>
+              <strong>AI 24h 상담봇</strong>
+              <span>야간 · 주말응대 · 자동견적 · 라우팅</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- LAYER 2 -->
+        <div class="biz-layer-card biz-layer-b2c">
+          <div class="biz-layer-header">
+            <span class="biz-layer-badge">LAYER 2 · B2C</span>
+            <p class="biz-layer-kw">리드+락인 · 데이터 해자</p>
+            <h3 class="biz-layer-title">AI 엔딩노트 <em>플랫폼</em></h3>
+            <p class="biz-layer-sub">사전 동의 · 장기 해자</p>
+          </div>
+          <ul class="biz-layer-list">
+            <li>
+              <strong>엔딩노트 플래너</strong>
+              <span>웰리가이드 · 사전 도의 명시 설계</span>
+            </li>
+            <li>
+              <strong>디지털 추모관</strong>
+              <span>사후 영구 기억 · B2C LTV 형성</span>
+            </li>
+            <li>
+              <strong>사후 행정 체크리스트</strong>
+              <span>상속 · 유품 · 기일 · 세무 자동안내</span>
+            </li>
+            <li>
+              <strong>자산 · 자문 라우팅</strong>
+              <span>금융 · 법률 · 부동산 자문 · 수익쉐어</span>
+            </li>
+            <li>
+              <strong>장례 매칭</strong>
+              <span>Layer 1 SaaS 자동라우팅 · 락인</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- LAYER 3 -->
+        <div class="biz-layer-card biz-layer-b2g">
+          <div class="biz-layer-header">
+            <span class="biz-layer-badge">LAYER 3 · B2G</span>
+            <p class="biz-layer-kw">신뢰자산 · 레퍼런스</p>
+            <h3 class="biz-layer-title">지자체·기관 <em>솔루션</em></h3>
+            <p class="biz-layer-sub">공영장례 · 임팩트 리포트</p>
+          </div>
+          <ul class="biz-layer-list">
+            <li>
+              <strong>공영장례 관리</strong>
+              <span>무연고 · 저소득 지자체 위탁 표준 운영</span>
+            </li>
+            <li>
+              <strong>웰다잉 교육</strong>
+              <span>사전연명의료 의향서 주민교육</span>
+            </li>
+            <li>
+              <strong>요양원 · 호스피스</strong>
+              <span>만성기 · 말기 의식 연결 장치</span>
+            </li>
+            <li>
+              <strong>임팩트 리포트</strong>
+              <span>IRI+ 5축 · SROI 자동산출</span>
+            </li>
+          </ul>
+        </div>
+
       </div>
     </div>
   </section>
