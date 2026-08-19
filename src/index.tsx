@@ -1874,40 +1874,10 @@ app.get('/about', (c) => {
             <h3 class="biz-layer-title">장례 운영 <em>SaaS</em></h3>
             <p class="biz-layer-sub">월정액 · 코어 베이스</p>
           </div>
-          <ul class="biz-layer-list">
-            <li>
-              <strong>스마트 견적 엔진</strong>
-              <span>사전 PMS 표준 견적 자동생성 · 발송</span>
-            </li>
-            <li>
-              <strong>장례진행 PMS</strong>
-              <span>건별 체크리스트 · P50 90분 응답</span>
-            </li>
-            <li>
-              <strong>실시간 정산</strong>
-              <span>소진량 즉시 입력 → 상주 앱 동기화 (zero 0)</span>
-            </li>
-            <li>
-              <strong>정산·세금 자동화</strong>
-              <span>항목별 자동합산 · 원클릭 발행</span>
-            </li>
-            <li>
-              <strong>CRM · 리드관리</strong>
-              <span>상담이력 자동저장 · 인력이탈 무관</span>
-            </li>
-            <li>
-              <strong>사후케어 자동화</strong>
-              <span>49재 · 기일 · 상속 알림 · B2B2C 쉐어</span>
-            </li>
-            <li>
-              <strong>부고 · 조의금</strong>
-              <span>온라인 조의금 수령 · PG마진</span>
-            </li>
-            <li>
-              <strong>AI 24h 상담봇</strong>
-              <span>야간 · 주말응대 · 자동견적 · 라우팅</span>
-            </li>
-          </ul>
+          <div class="biz-layer-coming">
+            <i class="fas fa-lock"></i>
+            <p>세부 내용은 준비 중입니다</p>
+          </div>
         </div>
 
         <!-- LAYER 2 -->
@@ -1918,28 +1888,10 @@ app.get('/about', (c) => {
             <h3 class="biz-layer-title">AI 엔딩노트 <em>플랫폼</em></h3>
             <p class="biz-layer-sub">사전 동의 · 장기 해자</p>
           </div>
-          <ul class="biz-layer-list">
-            <li>
-              <strong>엔딩노트 플래너</strong>
-              <span>웰리가이드 · 사전 도의 명시 설계</span>
-            </li>
-            <li>
-              <strong>디지털 추모관</strong>
-              <span>사후 영구 기억 · B2C LTV 형성</span>
-            </li>
-            <li>
-              <strong>사후 행정 체크리스트</strong>
-              <span>상속 · 유품 · 기일 · 세무 자동안내</span>
-            </li>
-            <li>
-              <strong>자산 · 자문 라우팅</strong>
-              <span>금융 · 법률 · 부동산 자문 · 수익쉐어</span>
-            </li>
-            <li>
-              <strong>장례 매칭</strong>
-              <span>Layer 1 SaaS 자동라우팅 · 락인</span>
-            </li>
-          </ul>
+          <div class="biz-layer-coming">
+            <i class="fas fa-lock"></i>
+            <p>세부 내용은 준비 중입니다</p>
+          </div>
         </div>
 
         <!-- LAYER 3 -->
@@ -1950,24 +1902,10 @@ app.get('/about', (c) => {
             <h3 class="biz-layer-title">지자체·기관 <em>솔루션</em></h3>
             <p class="biz-layer-sub">공영장례 · 임팩트 리포트</p>
           </div>
-          <ul class="biz-layer-list">
-            <li>
-              <strong>공영장례 관리</strong>
-              <span>무연고 · 저소득 지자체 위탁 표준 운영</span>
-            </li>
-            <li>
-              <strong>웰다잉 교육</strong>
-              <span>사전연명의료 의향서 주민교육</span>
-            </li>
-            <li>
-              <strong>요양원 · 호스피스</strong>
-              <span>만성기 · 말기 의식 연결 장치</span>
-            </li>
-            <li>
-              <strong>임팩트 리포트</strong>
-              <span>IRI+ 5축 · SROI 자동산출</span>
-            </li>
-          </ul>
+          <div class="biz-layer-coming">
+            <i class="fas fa-lock"></i>
+            <p>세부 내용은 준비 중입니다</p>
+          </div>
         </div>
 
       </div>

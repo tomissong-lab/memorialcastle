@@ -1523,3 +1523,23 @@ input, select, textarea { font-family: inherit; }
 @media (max-width: 768px) {
   .biz-layer-grid { grid-template-columns: 1fr; }
 }
+
+/* biz-layer-coming — 세부 내용 잠금 표시 */
+.biz-layer-coming {
+  padding: 36px 24px;
+  text-align: center;
+  background: #f8fafc;
+  color: #94a3b8;
+  font-size: .9rem;
+  border-top: 1px solid #e2e8f0;
+}
+.biz-layer-coming i {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  display: block;
+  color: #cbd5e1;
+}
+.biz-layer-coming p {
+  margin: 0;
+  letter-spacing: .03em;
+}
