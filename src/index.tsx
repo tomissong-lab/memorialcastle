@@ -123,7 +123,7 @@ app.get('/', (c) => {
       </div>
       <div class="hero-hotline">
         <i class="fas fa-headset"></i>
-        <strong>24시간 365일</strong>&nbsp;1588-9999
+        <strong>24시간 365일</strong>&nbsp;1877-5147
       </div>
     </div>
     <div class="hero-scroll-hint">
@@ -433,8 +433,8 @@ app.get('/', (c) => {
           </div>
         </div>
         <div class="emergency-right">
-          <a href="tel:15889999" class="btn btn-emergency-big pulse-btn">
-            <i class="fas fa-phone-alt"></i> 1588-9999
+          <a href="tel:18775147" class="btn btn-emergency-big pulse-btn">
+            <i class="fas fa-phone-alt"></i> 1877-5147
           </a>
           <p class="emergency-small">24시간 365일 · 주말·공휴일 포함</p>
         </div>
@@ -476,7 +476,7 @@ app.get('/', (c) => {
         </div>
         <div class="footer-contact">
           <h4>상담</h4>
-          <p><i class="fas fa-phone"></i> 1588-9999</p>
+          <p><i class="fas fa-phone"></i> 1877-5147</p>
           <p><i class="fas fa-clock"></i> 24시간 365일</p>
           <p><i class="fas fa-envelope"></i> memorialcastles@gmail.com</p>
           <p><i class="fas fa-map-marker-alt"></i> 인천광역시 부평구 서달로298번길 50, 2층(청천동)</p>
@@ -496,7 +496,7 @@ app.get('/', (c) => {
     </div>
   </footer>
 
-  <a href="tel:15889999" class="floating-btn pulse-btn" aria-label="긴급상담">
+  <a href="tel:18775147" class="floating-btn pulse-btn" aria-label="긴급상담">
     <i class="fas fa-phone-alt"></i>
     <span>긴급상담</span>
   </a>
@@ -668,7 +668,7 @@ app.get('/funeral', (c) => {
           <a href="/contact" class="btn btn-primary btn-full">
             <i class="fas fa-comments"></i> 무료 상담 신청
           </a>
-          <a href="tel:15889999" class="btn btn-emergency btn-full mt-8">
+          <a href="tel:18775147" class="btn btn-emergency btn-full mt-8">
             <i class="fas fa-phone-alt"></i> 지금 임종 — 즉시 연결
           </a>
         </div>
@@ -994,7 +994,7 @@ app.get('/funeral', (c) => {
           <div><h2>지금 임종하셨나요?</h2><p>당황하지 마세요. 위드엔딩이 즉시 출동합니다.</p></div>
         </div>
         <div class="emergency-right">
-          <a href="tel:15889999" class="btn btn-emergency-big pulse-btn"><i class="fas fa-phone-alt"></i> 1588-9999</a>
+          <a href="tel:18775147" class="btn btn-emergency-big pulse-btn"><i class="fas fa-phone-alt"></i> 1877-5147</a>
           <p class="emergency-small">24시간 365일 · 주말·공휴일 포함</p>
         </div>
       </div>
@@ -1014,7 +1014,7 @@ app.get('/funeral', (c) => {
     </div>
   </footer>
 
-  <a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+  <a href="tel:18775147" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
   <script src="/static/main.js"></script>
   <script src="/static/calculator.js"></script>
 </body>
@@ -1185,7 +1185,7 @@ app.get('/membership', (c) => {
           <div><h2>가입 상담이 필요하신가요?</h2><p>멤버십 전문 상담사가 최적 플랜을 추천해 드립니다.</p></div>
         </div>
         <div class="emergency-right">
-          <a href="tel:15889999" class="btn btn-emergency-big pulse-btn"><i class="fas fa-phone-alt"></i> 1588-9999</a>
+          <a href="tel:18775147" class="btn btn-emergency-big pulse-btn"><i class="fas fa-phone-alt"></i> 1877-5147</a>
           <p class="emergency-small">24시간 365일 운영</p>
         </div>
       </div>
@@ -1205,7 +1205,7 @@ app.get('/membership', (c) => {
     </div>
   </footer>
 
-  <a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+  <a href="tel:18775147" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
   <script src="/static/main.js"></script>
 </body>
 </html>`)
@@ -1412,7 +1412,7 @@ app.get('/asset', (c) => {
     </div>
   </footer>
 
-  <a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+  <a href="tel:18775147" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
   <script src="/static/main.js"></script>
   <script src="/static/simulator.js"></script>
 </body>
@@ -1455,8 +1455,8 @@ app.get('/contact', (c) => {
           <i class="fas fa-phone-volume contact-phone-icon"></i>
           <h1>지금 바로 연결됩니다</h1>
           <p>임종 직후, 당황하지 마세요.<br />위드엔딩 전담 코디네이터가 즉시 출동합니다.</p>
-          <a href="tel:15889999" class="btn btn-emergency-big pulse-btn contact-call-btn">
-            <i class="fas fa-phone-alt"></i> 1588-9999
+          <a href="tel:18775147" class="btn btn-emergency-big pulse-btn contact-call-btn">
+            <i class="fas fa-phone-alt"></i> 1877-5147
           </a>
           <div class="contact-tags">
             <span>✅ 24시간 365일</span>
@@ -1516,13 +1516,13 @@ app.get('/contact', (c) => {
             </button>
             <div id="sendError" style="display:none" class="form-error">
               <i class="fas fa-exclamation-circle"></i>
-              <span id="sendErrorMsg">전송 중 오류가 발생했습니다. 전화(1588-9999)로 연락해 주세요.</span>
+              <span id="sendErrorMsg">전송 중 오류가 발생했습니다. 전화(1877-5147)로 연락해 주세요.</span>
             </div>
           </form>
           <div id="formSuccess" style="display:none" class="form-success">
             <i class="fas fa-check-circle"></i>
             <h3>상담 신청이 완료되었습니다!</h3>
-            <p>2시간 내에 연락드리겠습니다. 긴급 상황이시면 1588-9999로 전화해 주세요.</p>
+            <p>2시간 내에 연락드리겠습니다. 긴급 상황이시면 1877-5147로 전화해 주세요.</p>
           </div>
         </div>
         <div class="contact-info">
@@ -1532,7 +1532,7 @@ app.get('/contact', (c) => {
               <i class="fas fa-phone"></i>
               <div>
                 <strong>전화 상담</strong>
-                <p>1588-9999</p>
+                <p>1877-5147</p>
                 <small>24시간 365일 운영</small>
               </div>
             </div>
@@ -1583,7 +1583,7 @@ app.get('/contact', (c) => {
     </div>
   </footer>
 
-  <a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+  <a href="tel:18775147" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="/static/main.js"></script>
   <script src="/static/contact.js"></script>
@@ -1688,7 +1688,7 @@ app.get('/guide', (c) => {
     </div>
   </footer>
 
-  <a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+  <a href="tel:18775147" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
   <script src="/static/main.js"></script>
 </body>
 </html>`)
@@ -1866,7 +1866,7 @@ app.get('/about', (c) => {
     </div>
   </footer>
 
-  <a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+  <a href="tel:18775147" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
   <script src="/static/main.js"></script>
 </body>
 </html>`)
@@ -2367,7 +2367,7 @@ ${authNavHTML}
   </div>
 </main>
 ${authFooterHTML}
-<a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+<a href="tel:18775147" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
 <script src="/static/main.js"></script>
 <script>
 const token = localStorage.getItem('we_token');
@@ -2573,7 +2573,7 @@ ${authNavHTML}
   </div>
 </main>
 ${authFooterHTML}
-<a href="tel:15889999" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
+<a href="tel:18775147" class="floating-btn pulse-btn"><i class="fas fa-phone-alt"></i><span>긴급상담</span></a>
 <script src="/static/main.js"></script>
 <script>
 const token = localStorage.getItem('we_token');
