@@ -760,8 +760,14 @@ app.get('/funeral', (c) => {
 
       <!-- 탭 버튼 -->
       <div class="detail-tab-group">
-        <button class="detail-tab active" onclick="switchTab('tab-full')">📋 베이직 · 스탠다드 · 프리미엄</button>
-        <button class="detail-tab" onclick="switchTab('tab-mubinso')">🏠 무빈소 기본형 · 고급형</button>
+        <button class="detail-tab tab-full-btn active" onclick="switchTab('tab-full')">
+          <i class="fas fa-layer-group"></i>
+          <span>베이직 · 스탠다드 · 프리미엄</span>
+        </button>
+        <button class="detail-tab tab-mubinso-btn" onclick="switchTab('tab-mubinso')">
+          <i class="fas fa-home"></i>
+          <span>무빈소 기본형 · 고급형</span>
+        </button>
       </div>
 
       <!-- 탭 패널 -->
@@ -880,7 +886,8 @@ app.get('/funeral', (c) => {
     document.querySelectorAll('.detail-tab-panels .tab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.detail-tab').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    event.target.classList.add('active');
+    var btn = event.target.closest('.detail-tab');
+    if (btn) btn.classList.add('active');
   }
   </script>
 
